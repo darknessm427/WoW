@@ -37,7 +37,7 @@ def export_bestIPS(path):
 def export_Hiddify(t_ips, f_ips):
     creation_time = os.path.getctime(f_ips)
     formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime("%Y-%m-%d %H:%M:%S")
-    config_prefix = f'warp://{t_ips[0]}?ifp=10-20&ifps=20-60&ifpd=5-10#Warp-IR&&detour=warp://{t_ips[1]}?ifp=10-20&ifps=20-60&ifpd=5-10#Warp-ON-Warp'
+    config_prefix = f'warp://{t_ips[0]}?ifp=10-20&ifps=20-60&ifpd=5-10#𓄂𓆃-IR&&detour=warp://{t_ips[1]}?ifp=10-20&ifps=20-60&ifpd=5-10#WoW-ÐΛɌ₭ᑎΞ𐒡𐒡-De'
 
     title = "//profile-title: base64:" + base64.b64encode('𓄂𓆃 ÐΛɌ₭ᑎΞ𐒡𐒡 '.encode('utf-8')).decode(
         'utf-8') + "\n"
@@ -82,9 +82,9 @@ def export_SingBox(t_ips, arch):
     subprocess.run(["wget", warp_go_url, "-O", "warp-go"])
     os.chmod("warp-go", 0o755)
 
-    main_wg = toSingBox('WARP-MAIN', t_ips[0], "direct")
+    main_wg = toSingBox('@darkness_427-Ir', t_ips[0], "direct")
     data["outbounds"].insert(1, main_wg)
-    wow_wg = toSingBox('WARP-WOW', t_ips[1], "WARP-MAIN")
+    wow_wg = toSingBox('@darkness_427-De', t_ips[1], "WARP-MAIN")
     data["outbounds"].insert(2, wow_wg)
 
     with open('sing-box.json', 'w') as f:
