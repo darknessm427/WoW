@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    - cron: '*/45 * * * *'
+    - cron: '0 0,3 * * *'
 
 permissions:
   contents: write
