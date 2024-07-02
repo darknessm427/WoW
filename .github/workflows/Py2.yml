@@ -23,7 +23,7 @@ jobs:
         pip install ipaddress
    
     - name: Run script
-      run: python warp.py
+      run: python warp2.py
     - name: Commit and push changes
       run: |          
           git config --global user.email "darknessm.427@gmail.com"
