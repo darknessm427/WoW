@@ -6,7 +6,7 @@ on:
     paths:
       - 'warpevil.py'
   schedule: #every fuckin 45 minutes
-    - cron: '*/45 * * * *'
+    - cron: '*/180 * * * *'
 
 jobs:
   build:
