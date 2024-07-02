@@ -92,10 +92,10 @@ sub_info = "//subscription-userinfo: upload=0; download=0; total=107374182400000
 profile_web = "//profile-web-page-url: https://github.com/mansor427\n"
 last_modified = "//last update on: " + warp_ip()[1] + "\n"
 configs = warp_ip()[0]
-with open('warp.json', 'w') as op:
+with open('warp2.json', 'w') as op:
     op.write(title + update_interval + sub_info + profile_web  + last_modified + configs)
 
-with open('Bestip.txt', 'w') as f:
+with open('Bestip2.txt', 'w') as f:
     for ip in Bestip:
         f.write(f"{ip}\n")
 
