@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'warp.py'
+      - 'warpevil.py'
   schedule: #every fuckin 45 minutes
     - cron: '*/45 * * * *'
 
