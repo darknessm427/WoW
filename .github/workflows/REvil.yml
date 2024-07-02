@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
     paths:
       - 'warpevil.py'
-  schedule: #every fuckin 45 minutes
+  schedule: #every fuckin 3h
     - cron: '*/180 * * * *'
 
 jobs:
