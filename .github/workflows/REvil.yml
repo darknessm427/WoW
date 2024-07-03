@@ -28,8 +28,8 @@ jobs:
       run: python warpevil.py
     - name: Commit and push changes
       run: |          
-          git config --global user.email "darknessm.427@gmail.com"
-          git config --global user.name "darknessm427"
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
           git config credential.helper store
           git add -A
           git commit -m "Auto update"
