@@ -359,7 +359,7 @@ def export_SingBox2(t_ips, arch):
     wow_wg = toSingBox22('WARP-WOW', t_ips[1], "WARP-MAIN")
     data["outbounds"].insert(4, wow_wg)  
 
-    with open('sing-box-hiddify.json', 'w') as f:
+    with open('warp.json', 'w') as f:
         f.write(json.dumps(data, indent=4))
 
 
