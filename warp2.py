@@ -82,7 +82,7 @@ def warp_ip():
     creation_time = os.path.getctime(result_path)
     formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime("%Y-%m-%d %H:%M:%S")
     for i, ip in enumerate(Bestip):
-        config_prefix = f'warp://{Bestip[0]}?ifp=1-3&ifpm=m4#@mansor427🇮🇷&&detour=warp://{Bestip[1]}?ifp=1-3&ifpm=m6#ÐΛɌ₭ᑎΞ𐒡𐒡🇩🇪WoW\nwarp://{Bestip[0]}?ifp=2-4&ifpm=m3#@mansor427🇮🇷&&detour=warp://{Bestip[1]}?ifp=1-3&ifpm=m6#ÐΛɌ₭ᑎΞ𐒡𐒡🇩🇪WoW\nwarp://@auto6/?ifp=1-3&ifpm=m4#LocalV6&&detour=warp://@auto4/?ifp=1-3&ifpm=m6#WoWV4_v6'
+        config_prefix = f'warp://{Bestip[0]}/?ifp=40-80&ifps=50-100&ifpd=2-4&ifpm=m4#@mansor427🇮🇷&&detour=warp://{Bestip[1]}/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m6#ÐΛɌ₭ᑎΞ𐒡𐒡🇩🇪WoW\nwarp://{Bestip[0]}/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m3#@mansor427🇮🇷&&detour=warp://{Bestip[1]}/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m6#ÐΛɌ₭ᑎΞ𐒡𐒡🇩🇪WoW\nwarp://@auto6/?ifp=30-60&ifps=30-60&ifpd=2-4&ifpm=m4#LocalV6&&detour=warp://@auto4/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m4#WoWV4_v6'
 
     return config_prefix, formatted_time
 
