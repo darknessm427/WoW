@@ -34,6 +34,6 @@ foreach ($strings as $val) {
     }
 }
 
-$warp .= "\n" . $first_ip . '#𓄂𓆃 🇮🇷 IP&&detour=' . $second_ip . '#@darkness_427 🇩🇪 IP';
+$warp .= "\n" . $first_ip . '/?ifp=30-60&ifps=30-60&ifpd=4-8&ifpm=m4#𓄂𓆃 🇮🇷 IP&&detour=' . $second_ip . '/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m4#@darkness_427 🇩🇪 IP';
 
     file_put_contents("subwarp/warp", $warp);
