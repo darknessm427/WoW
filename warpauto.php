@@ -7,7 +7,6 @@
     $warp .= "//profile-update-interval: 1\n";
     $warp .= "//subscription-userinfo: upload=0; download=0; total=10737418240000000; expire=0\n";
     $warp .= "//profile-web-page-url: https://github.com/mansor427\n\n";
-    $warp .= "warp://auto#mansor427🇮🇷 &&detour=warp://auto#@darkness_427🇩🇪";
     $warp .= "\n";
     $warp .= "warp://@auto/?ifp=40-80&ifps=50-100&ifpd=2-4&ifpm=m4#🇮🇷𓄂𓆃 &&detour=warp://@auto/?ifp=30-60&ifps=40-80&ifpd=1-3&ifpm=m6#🇩🇪@darkness_427";
     $warp .= "\n";
