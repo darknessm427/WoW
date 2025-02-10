@@ -2,8 +2,7 @@ import platform, subprocess, os, datetime, base64, json
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
 import requests
-   
-   
+
 temphi = {
     "outbounds": [
         {
@@ -133,7 +132,7 @@ def register_key_on_CF(pub_key):
         "locale": "en_US",
     }
 
-     bodyString = json.dumps(body)
+    bodyString = json.dumps(body)
 
     headers = {
         "Content-Type": "application/json; charset=UTF-8",
@@ -205,6 +204,7 @@ def export_bestIPS(path):
             f.write(f"{ip}\n")
 
     return Bestip
+
 def export_bestIPS2(path):
     Bestip = []
 
@@ -225,7 +225,7 @@ def export_Hiddify(t_ips, f_ips):
     formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime("%Y-%m-%d %H:%M:%S")
     config_prefix = f'warp://{t_ips[0]}?ifp=1-3&ifpm=m4#IR&&detour=warp://{t_ips[1]}?ifp=1-2&ifpm=m5#WoW-DE'
 
-    title = "//profile-title: base64:" + base64.b64encode('𓄂𓆃 🗽 ÐΛɌ₭ᑎΞ𐒡𐒡 '.encode('utf-8')).decode(
+    title = "//profile-title: base64:" + base64.b64encode('\ud80c\udd02\ud80c\udd83 \ud83d\uddfd \u00d0\u039b\u024c\u20ad\u144e\u039e\ud801\udca1\ud801\udca1 '.encode('utf-8')).decode(
         'utf-8') + "\n"
     update_interval = "//profile-update-interval: 3\n"
     sub_info = "//subscription-userinfo: upload=0; download=0; total=10737418240000000; expire=2546249531\n"
@@ -353,7 +353,7 @@ def export_SingBox2(t_ips, arch):
 
     os.remove("warp-go")
 
- 
+
 def main(script_dir):
     arch = arch_suffix()
     print("Fetch warp program...")
@@ -382,3 +382,4 @@ def main(script_dir):
 if __name__ == '__main__':
     script_directory = os.path.dirname(__file__)
     main(script_directory)
+   
