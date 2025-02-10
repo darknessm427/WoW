@@ -56,7 +56,6 @@ jobs:
           git config --local user.name "darknessm427"
           git config --local user.email "171773043+darknessm427@users.noreply.github.com"
           git add -A
-          # Check if there are changes to commit
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "Automatic update $(TZ='Asia/Tehran' date '+%H:%M:%S')" \
                        -m "Warp private key, addresses, reserved and all IP's have been renewed"
@@ -64,6 +63,5 @@ jobs:
                 -c committer.name="github-actions[bot]" -c committer.email="41898282+github-actions[bot]@users.noreply.github.com" \
                 commit --amend --no-edit
             git push || exit 1
-          else
+          else:
             echo "No changes detected. Skipping commit and push."
-          fi
