@@ -1,38 +1,65 @@
-name: REvil_Warp
- 
+name: warp_REvil
+
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
     paths:
-      - 'warpevil.py'
-  schedule: 
-    - cron: '*/720 * * * *'
+      - 'warpREvil.py'
+      - '**/*.json'
+  schedule:
+    - cron: '0 */8 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install ipaddress
-        pip install cryptography 
-        pip install requests
-   
-    - name: Run script
-      run: python warpevil.py
-    - name: Commit and push changes
-      run: |          
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git config credential.helper store
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          architecture: x64
+
+      - name: Cache Python packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip || exit 1
+          pip install -r assets/requirements.txt || exit 1
+
+      - name: Run script
+        run: |
+          python warpREvil.py || exit 1
+
+      - name: Commit and push if changes are detected
+        run: |
+          git config --local user.name "darknessm427"
+          git config --local user.email "171773043+darknessm427@users.noreply.github.com"
           git add -A
-          git commit -m "Auto update"
-          git push
+          # Check if there are changes to commit
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Automatic update $(TZ='Asia/Tehran' date '+%H:%M:%S')" \
+                       -m "Warp private key, addresses, reserved and all IP's have been renewed"
+            git -c author.name="darknessm427" -c author.email="171773043+darknessm427@users.noreply.github.com" \
+                -c committer.name="github-actions[bot]" -c committer.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                commit --amend --no-edit
+            git push || exit 1
+          else
+            echo "No changes detected. Skipping commit and push."
+          fi
