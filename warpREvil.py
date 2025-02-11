@@ -599,7 +599,7 @@ def export_Xray(t_ips, arch):
 
 
 def export_SingBox2(t_ips, arch):
-    with open("assets/hiddify-singbox.json", "r") as f:
+    with open("assets/hiddify-template.json", "r") as f:
         data = json.load(f)
     main_wg = toSingBox2("WARP-MAIN", t_ips[0], "direct",temphi)
     data["outbounds"].insert(3, main_wg)
