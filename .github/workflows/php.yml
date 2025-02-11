@@ -5,6 +5,7 @@ on:
     branches: ['main']
     paths:
       - '**/warpauto.*'
+      - 'subwarp/warp'
   schedule:
     - cron: '0 */5 * * *'
   workflow_dispatch:
