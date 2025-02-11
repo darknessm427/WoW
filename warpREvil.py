@@ -466,7 +466,11 @@ def export_Hiddify(t_ips, f_ips):
     )
     config_prefix = f"warp://{t_ips[0]}?ifp=1-3&ifpm=m4#Warp-IR&&detour=warp://{t_ips[1]}?ifp=1-2&ifpm=m5#WoW-DE"
 
-    title = "//profile-title: base64:" + base64.b64encode('𓄂𓆃 🗽 ÐΛɌ₭ᑎΞ𐒡𐒡 '.encode('utf-8')).decode('utf-8') + "\n")
+    title = (
+            "//profile-title: base64:"
+            + base64.b64encode("𓄂𓆃 🗽 ÐΛɌ₭ᑎΞ𐒡𐒡 ".encode("utf-8")).decode("utf-8")
+            + "\n"
+        )
     update_interval = "//profile-update-interval: 3\n"
     sub_info = "//subscription-userinfo: upload=0; download=0; total=10737418240000000; expire=2546249531\n"
     profile_web = "//profile-web-page-url: https://github.com/darknessm427\n"
