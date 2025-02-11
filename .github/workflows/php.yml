@@ -1,11 +1,13 @@
-name: "WARP"
+name: 'WARP_PHP'
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: ['main']
+    paths:
+      - '**/warpauto.*'
   schedule:
     - cron: '*/45 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,14 +16,17 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash -e {0}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
+          submodules: 'recursive' 
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           NODE_VERSION: '20'
@@ -29,22 +34,22 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.0'
+          php-version: '8.2'
 
       - name: Execute PHP script
-        run: php warpauto.php
+        run: php warpauto.php || exit 1
 
       - name: Configure Git
         run: |
-          git config --global user.email "darknessm.427@gmail.com"
-          git config --global user.name "darknessm"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
-      - name: Commit changes
+      - name: Commit changes with timestamp
         run: |
           git add -A
-          git diff --cached --quiet || git commit -m "🤖Auto update💀 - $(TZ='Asia/Tehran' date '+%Y-%m-%d %H:%M')"
+          git diff --cached --quiet || git commit -m "🤖Auto update $(TZ='Asia/Tehran' date '+%H:%M:%S')"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
