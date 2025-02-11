@@ -6,7 +6,7 @@ on:
     paths:
       - '**/warpauto.*'
   schedule:
-    - cron: '*/45 * * * *'
+    - cron: '0 */5 * * *'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +27,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: 'recursive' 
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
         env:
           NODE_VERSION: '20'
 
@@ -52,4 +52,4 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
