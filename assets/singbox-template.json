@@ -48,68 +48,7 @@
     "final": "proxy-dns",
     "strategy": "prefer_ipv4"
   },
-  "endpoints": [
-    {
-      "type": "wireguard",
-      "tag": "WARP-WOW",
-      "name": "",
-      "mtu": 1280,
-      "address": [
-        "172.16.0.2/32",
-        "2606:4700:110:846c:e510:bfa1:ea9f:5247/128"
-      ],
-      "private_key": "SDPZ5bYK9bQn5llpTZw+DsRWMZqt0oxVcbKFcwr8RVA=",
-      "peers": [
-        {
-          "address": "188.114.97.79",
-          "port": 5956,
-          "public_key": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-          "allowed_ips": [
-            "0.0.0.0/0",
-            "::/0"
-          ],
-          "persistent_keepalive_interval": 30,
-          "reserved": [
-            104,
-            76,
-            175
-          ]
-        }
-      ],
-      "detour": "WARP-MAIN",
-      "workers": 2
-    },
-    {
-      "type": "wireguard",
-      "tag": "WARP-WOW",
-      "name": "",
-      "mtu": 1280,
-      "address": [
-        "172.16.0.2/32",
-        "2606:4700:110:846c:e510:bfa1:ea9f:5247/128"
-      ],
-      "private_key": "SDPZ5bYK9bQn5llpTZw+DsRWMZqt0oxVcbKFcwr8RVA=",
-      "peers": [
-        {
-          "address": "188.114.97.79",
-          "port": 5956,
-          "public_key": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-          "allowed_ips": [
-            "0.0.0.0/0",
-            "::/0"
-          ],
-          "persistent_keepalive_interval": 30,
-          "reserved": [
-            104,
-            76,
-            175
-          ]
-        }
-      ],
-      "detour": "WARP-MAIN",
-      "workers": 2
-    }
-  ],
+  "endpoints": [],
   "inbounds": [
     {
       "type": "direct",
@@ -138,19 +77,13 @@
     {
       "type": "selector",
       "tag": "proxy",
-      "outbounds": [
-        "WARP-MAIN",
-        "WARP-WOW"
-      ],
+      "outbounds": [],
       "default": "WARP-WOW"
     },
     {
       "type": "urltest",
       "tag": "auto",
-      "outbounds": [
-        "WARP-MAIN",
-        "WARP-WOW"
-      ],
+      "outbounds": [],
       "url": "https://www.gstatic.com/generate_204",
       "tolerance": 50
     },
@@ -182,12 +115,7 @@
         "override_port": 443
       },
       {
-        "rule_set": [
-          "geoip-private",
-          "geosite-private",
-          "geosite-ir",
-          "geoip-ir"
-        ],
+        "rule_set": ["geoip-private", "geosite-private", "geosite-ir", "geoip-ir"],
         "action": "direct"
       },
       {

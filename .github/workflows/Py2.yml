@@ -1,34 +1,63 @@
-name: me_warp
+name: my warp
 
 on:
   push:
-    branches: [ "main" ]
-  schedule: 
-    - cron: '*/45 * * * *'
+    branches: ['main']
+    paths:
+      - '**/warp2*'
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install ipaddress
-   
-    - name: Run script
-      run: python warp2.py
-    - name: Commit and push changes
-      run: |          
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git config credential.helper store
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          architecture: x64
+
+      - name: Cache Python packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip || exit 1
+          pip install -r assets/requirements.txt || exit 1
+
+      - name: Run script
+        run: python warp2.py
+
+      - name: Commit and push if changes are detected
+        run: |
+          git config --local user.name "darknessm427"
+          git config --local user.email "171773043+darknessm427@users.noreply.github.com"
           git add -A
-          git commit -m "Automatic update"
-          git push
+          # Check if there are changes to commit
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Automatic update $(TZ='Asia/Tehran' date '+%H:%M:%S')" \
+                       -m "Warp private key, addresses, reserved and all IP's have been renewed"
+            git -c author.name="darknessm427" -c author.email="171773043+darknessm427@users.noreply.github.com" \
+                -c committer.name="github-actions[bot]" -c committer.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                commit --amend --no-edit
+            git push || exit 1
+          else
+            echo "No changes detected. Skipping commit and push."
+          fi
