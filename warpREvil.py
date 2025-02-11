@@ -2,93 +2,52 @@ import platform, subprocess, os, datetime, base64, json
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
 import requests
-
-temphi = {
-    "outbounds": [
-        {
-            "type": "wireguard",
-            "server": "",
-            "server_port": 0,
-            "local_address": ["172.16.0.2/32", ""],
-            "private_key": "",
-            "peer_public_key": "",
-            "reserved": [],
-            "mtu": 1300,
-            "workers": 2,
-            "detour": "",
-            "tag": "",
-            "fake_packets": "1-3",
-            "fake_packets_size": "10-30",
-            "fake_packets_delay": "10-30",
-            "fake_packets_mode": "m4",
-        }
-    ]
-}
-
-temp2hi = {
-    "outbounds": [
-        {
-            "type": "wireguard",
-            "server": "",
-            "server_port": 0,
-            "local_address": ["172.16.0.2/32", ""],
-            "private_key": "",
-            "peer_public_key": "",
-            "reserved": [],
-            "mtu": 1300,
-            "workers": 2,
-            "detour": "",
-            "tag": "",
-            "fake_packets_mode": "m4",
-        }
-    ]
-}
+   
 
 temp ={
 "outbounds":[ {
-                "type": "wireguard",
-                "tag": "",
-                "name": "",
-                "mtu": 1280,
-                "address": ["172.16.0.2/32", ""],
-                "private_key": "",
-                "peers": [
-                    {
-                        "address": "",
-                        "port": 0,
-                        "public_key": "",
-                        "allowed_ips": ["0.0.0.0/0", "::/0"],
-                        "persistent_keepalive_interval": 30,
-                        "reserved": [],
-                    }
-                ],
-                "detour": "",
-                "workers": 2,
+            "type": "wireguard",
+            "tag": "",
+            "name": "",
+            "mtu": 1280,
+            "address": ["172.16.0.2/32", ""],
+            "private_key": "",
+            "peers": [
+                {
+                "address": "",
+                "port": 0,
+                "public_key": "",
+                "allowed_ips": ["0.0.0.0/0", "::/0"],
+                "persistent_keepalive_interval": 30,
+                "reserved": [],
+                }
+            ],
+            "detour": "",
+            "workers": 2,
 }]
 }
 
-temp2 ={
-   "outbounds": [
-      {
-          "type": "wireguard",
-          "tag": "",
-          "name": "",
-          "mtu": 1280,
-          "address": ["172.16.0.2/32", ""],
-          "private_key": "",
-          "peers": [
-              {
-                  "address": "",
-                  "port": 0,
-                  "public_key": "",
-                  "allowed_ips": ["0.0.0.0/0", "::/0"],
-                  "persistent_keepalive_interval": 30,
-                  "reserved": [],
-              }
-          ],
-          "detour": "",
-          "workers": 2,
-}]
+
+temp2={
+  "outbounds": 
+  [
+        {
+            "type": "wireguard",
+            "server": "",
+            "server_port": 0,
+            "local_address": [
+                "172.16.0.2/32",
+                ""
+            ],
+            "private_key": "",
+            "peer_public_key": "",
+            "reserved": [],
+            "mtu": 1330,
+            "workers": 2,
+            "detour": "",
+            "tag": ""
+        }
+  ]
 }
     
 def byte_to_base64(myb):
@@ -108,7 +67,6 @@ def generate_public_key(key_bytes):
         format=serialization.PublicFormat.Raw
     )    
     return public_key_bytes
-
 
 
 def generate_private_key():
@@ -156,8 +114,7 @@ def bind_keys():
     
     pub_bytes = generate_public_key(priv_bytes)
     pub_string = byte_to_base64(pub_bytes)
-    
-    
+
     result = register_key_on_CF(pub_string)
     
     if result.status_code == 200:
@@ -173,18 +130,16 @@ def bind_keys():
         except Exception as e:
             print('Something went wronge with api')
             exit()
-
-
 def arch_suffix():
     machine = platform.machine().lower()
-    if machine.startswith("i386") or machine.startswith("i686"):
-        return "386"
-    elif machine.startswith(("x86_64", "amd64")):
-        return "amd64"
-    elif machine.startswith(("armv8", "arm64", "aarch64")):
-        return "arm64"
-    elif machine.startswith("s390x"):
-        return "s390x"
+    if machine.startswith('i386') or machine.startswith('i686'):
+        return '386'
+    elif machine.startswith(('x86_64', 'amd64')):
+        return 'amd64'
+    elif machine.startswith(('armv8', 'arm64', 'aarch64')):
+        return 'arm64'
+    elif machine.startswith('s390x'):
+        return 's390x'
     else:
         raise ValueError(
             "Unsupported CPU architecture. Supported architectures are: i386, i686, x86_64, amd64, armv8, arm64, aarch64, s390x"
@@ -209,27 +164,13 @@ def export_bestIPS(path):
 
     return Bestip
 
-def export_bestIPS2(path):
-    Bestip = []
-
-    with open(path, 'r') as csv_file:
-        csv_file2=csv_file.readlines()
-        c = 0
-        for line in csv_file2:
-            Bestip.append(line[:len(line)-1])
-            c += 1
-            if c == 2:
-                break
-
-    return Bestip
-
 
 def export_Hiddify(t_ips, f_ips):
     creation_time = os.path.getctime(f_ips)
     formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime("%Y-%m-%d %H:%M:%S")
     config_prefix = f'warp://{t_ips[0]}?ifp=1-3&ifpm=m4#IR&&detour=warp://{t_ips[1]}?ifp=1-2&ifpm=m5#WoW-DE'
 
-    title = "//profile-title: base64:" + base64.b64encode('\ud80c\udd02\ud80c\udd83 \ud83d\uddfd \u00d0\u039b\u024c\u20ad\u144e\u039e\ud801\udca1\ud801\udca1 '.encode('utf-8')).decode(
+    title = "//profile-title: base64:" + base64.b64encode('𓄂𓆃 🗽 ÐΛɌ₭ᑎΞ𐒡𐒡 '.encode('utf-8')).decode(
         'utf-8') + "\n"
     update_interval = "//profile-update-interval: 3\n"
     sub_info = "//subscription-userinfo: upload=0; download=0; total=10737418240000000; expire=2546249531\n"
@@ -245,6 +186,7 @@ def export_Hiddify(t_ips, f_ips):
             + last_modified
             + config_prefix
         )
+
 
 def toSingBox1(tag, clean_ip, detour):
     print("Generating Warp Conf")
@@ -282,46 +224,11 @@ def toSingBox11(tag, clean_ip, detour):
     return wg
 
 
-def toSingBox2(tag, clean_ip, detour):
-    print("Generating Warp Conf")
-
-    data = bind_keys()
-    wg = temphi["outbounds"][0]
-    wg["private_key"] = data[1]
-    wg["peer_public_key"] = data[3]
-    wg["reserved"] = data[2]
-    wg["local_address"][1] = data[0]
-    wg["server"] = clean_ip.split(":")[0]
-    wg["server_port"] = int(clean_ip.split(":")[1])
-    wg["mtu"] = 1300
-    wg["workers"] = 2
-    wg["detour"] = detour
-    wg["tag"] = tag
-    return wg
-
-
-def toSingBox22(tag, clean_ip, detour):
-    print("Generating Warp Conf")
-
-    data = bind_keys()
-    wg = temp2hi["outbounds"][0]
-    wg["private_key"] = data[1]
-    wg["peer_public_key"] = data[3]
-    wg["reserved"] = data[2]
-    wg["local_address"][1] = data[0]
-    wg["server"] = clean_ip.split(":")[0]
-    wg["server_port"] = int(clean_ip.split(":")[1])
-    wg["mtu"] = 1300
-    wg["workers"] = 2
-    wg["detour"] = detour
-    wg["tag"] = tag
-    return wg
-
 
 def export_SingBox(t_ips, arch):
-    with open("assets/singbox-template.json", "r") as f:
+    with open('assets/singbox-template.json', 'r') as f:
         data = json.load(f)
-       
+
     data["outbounds"][0]["outbounds"].extend(["WARP-MAIN", "WARP-WOW"])
     data["outbounds"][1]["outbounds"].extend(["WARP-MAIN", "WARP-WOW"])
 
@@ -336,28 +243,13 @@ def export_SingBox(t_ips, arch):
         data["endpoints"].append(wow_wg)
     else:
         print(f"Failed to generate WARP-MAIN configuration")
-       
+
     with open("sing-box.json", "w") as f:
         f.write(json.dumps(data, indent=2))
 
     os.remove("warp-go")
 
-
-def export_SingBox2(t_ips, arch):
-    with open("assets/singbox-template.json", "r") as f:
-        data = json.load(f)
-
-    main_wg = toSingBox2("WARP-MAIN", t_ips[0], "direct")
-    data["outbounds"].insert(3, main_wg)
-    wow_wg = toSingBox22("WARP-WOW", t_ips[1], "WARP-MAIN")
-    data["outbounds"].insert(4, wow_wg)
-
-    with open("warp.json", "w") as f:
-        f.write(json.dumps(data, indent=2))
-
-    os.remove("warp-go")
-
-
+ 
 def main(script_dir):
     arch = arch_suffix()
     print("Fetch warp program...")
@@ -373,17 +265,17 @@ def main(script_dir):
     else:
         print("Warp executed successfully.")
 
-    result_path = os.path.join(script_dir, 'result.csv')
+    result_path = os.path.join(script_dir, "result.csv")
     top_ips = export_bestIPS(result_path)
 
     export_SingBox(t_ips=top_ips, arch=arch)
     export_SingBox2(t_ips=top_ips, arch=arch)
-   
+
     os.remove("result.csv")
     os.remove("warp")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     script_directory = os.path.dirname(__file__)
     main(script_directory)
-   
+    
