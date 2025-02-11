@@ -10,64 +10,66 @@ import requests
 temphi = {
     "outbounds": [
         {
-         "type": "wireguard",
-         "server": "",
-         "server_port": 0,
-         "local_address": ["172.16.0.2/32", ""],
-         "private_key": "",
-         "peer_public_key": "",
-         "reserved": [],
-         "mtu": 1300,
-         "workers": 2,
-         "detour": "",
-         "tag": "",
-         "fake_packets": "1-3",
-         "fake_packets_size": "10-30",
-         "fake_packets_delay": "10-30",
-         "fake_packets_mode": "m4",
+            "type": "wireguard",
+            "server": "",
+            "server_port": 0,
+            "local_address": ["172.16.0.2/32", ""],
+            "private_key": "",
+            "peer_public_key": "",
+            "reserved": [],
+            "mtu": 1300,
+            "workers": 2,
+            "detour": "",
+            "tag": "",
+            "fake_packets": "1-3",
+            "fake_packets_size": "10-30",
+            "fake_packets_delay": "10-30",
+            "fake_packets_mode": "m4",
         }
     ]
 }
 temp2hi = {
     "outbounds": [
         {
-         "type": "wireguard",
-         "server": "",
-         "server_port": 0,
-         "local_address": ["172.16.0.2/32", ""],
-         "private_key": "",
-         "peer_public_key": "",
-         "reserved": [],
-         "mtu": 1300,
-         "workers": 2,
-         "detour": "",
-         "tag": "",
-         "fake_packets_mode": "m4",
+            "type": "wireguard",
+            "server": "",
+            "server_port": 0,
+            "local_address": ["172.16.0.2/32", ""],
+            "private_key": "",
+            "peer_public_key": "",
+            "reserved": [],
+            "mtu": 1300,
+            "workers": 2,
+            "detour": "",
+            "tag": "",
+            "fake_packets_mode": "m4",
         }
     ]
 }
 
-temp ={
-"outbounds":[ {
-             "type": "wireguard",
-             "tag": "",
-             "name": "",
-             "mtu": 1280,
-             "address": ["172.16.0.2/32", ""],
-             "private_key": "",
-             "peers": [
-                 {
-                  "address": "",
-                  "port": 0,
-                  "public_key": "",
-                  "allowed_ips": ["0.0.0.0/0", "::/0"],
-                  "persistent_keepalive_interval": 30,
-                  "reserved": [],
-                 }
-             ],
-             "detour": "",
-             "workers": 2,
-}]
+temp = {
+    "outbounds": [
+        {
+            "type": "wireguard",
+            "tag": "",
+            "name": "",
+            "mtu": 1280,
+            "address": ["172.16.0.2/32", ""],
+            "private_key": "",
+            "peers": [
+                {
+                    "address": "",
+                    "port": 0,
+                    "public_key": "",
+                    "allowed_ips": ["0.0.0.0/0", "::/0"],
+                    "persistent_keepalive_interval": 30,
+                    "reserved": [],
+                }
+            ],
+            "detour": "",
+            "workers": 2,
+        }
+    ]
 }
 WoW_v2 = [
     {
@@ -467,10 +469,10 @@ def export_Hiddify(t_ips, f_ips):
     config_prefix = f"warp://{t_ips[0]}?ifp=1-3&ifpm=m4#Warp-IR&&detour=warp://{t_ips[1]}?ifp=1-2&ifpm=m5#WoW-DE"
 
     title = (
-            "//profile-title: base64:"
-            + base64.b64encode("𓄂𓆃 🗽 ÐΛɌ₭ᑎΞ𐒡𐒡 ".encode("utf-8")).decode("utf-8")
-            + "\n"
-        )
+        "//profile-title: base64:"
+        + base64.b64encode("𓄂𓆃 🗽 ÐΛɌ₭ᑎΞ𐒡𐒡 ".encode("utf-8")).decode("utf-8")
+        + "\n"
+    )
     update_interval = "//profile-update-interval: 3\n"
     sub_info = "//subscription-userinfo: upload=0; download=0; total=10737418240000000; expire=2546249531\n"
     profile_web = "//profile-web-page-url: https://github.com/darknessm427\n"
@@ -486,7 +488,8 @@ def export_Hiddify(t_ips, f_ips):
             + config_prefix
         )
 
-def toSingBox1(tag, clean_ip, detour,temp):
+
+def toSingBox1(tag, clean_ip, detour, temp):
     print("Generating Warp Conf")
 
     data = bind_keys()
@@ -504,7 +507,7 @@ def toSingBox1(tag, clean_ip, detour,temp):
     return wg
 
 
-def toSingBox2(tag, clean_ip, detour,temp):
+def toSingBox2(tag, clean_ip, detour, temp):
     print("Generating Warp Conf")
 
     data = bind_keys()
@@ -564,6 +567,7 @@ def toxray11(clean_ip):
     WoW_v2[0]["outbounds"][1]["settings"]["mtu"] = 1300
     WoW_v2 = WoW_v2
 
+
 def export_SingBox(t_ips, arch):
     with open("assets/singbox-template.json", "r") as f:
         data = json.load(f)
@@ -571,13 +575,13 @@ def export_SingBox(t_ips, arch):
     data["outbounds"][0]["outbounds"].extend(["WARP-MAIN", "WARP-WOW"])
     data["outbounds"][1]["outbounds"].extend(["WARP-MAIN", "WARP-WOW"])
 
-    main_wg = toSingBox1("WARP-MAIN", t_ips[0], "direct",temp)
+    main_wg = toSingBox1("WARP-MAIN", t_ips[0], "direct", temp)
     if main_wg:
         data["endpoints"].append(main_wg)
     else:
         print(f"Failed to generate WARP-MAIN configuration")
 
-    wow_wg = toSingBox1("WARP-WOW", t_ips[1], "WARP-MAIN",temp)
+    wow_wg = toSingBox1("WARP-WOW", t_ips[1], "WARP-MAIN", temp)
     if wow_wg:
         data["endpoints"].append(wow_wg)
     else:
@@ -601,9 +605,9 @@ def export_Xray(t_ips, arch):
 def export_SingBox2(t_ips, arch):
     with open("assets/hiddify-template.json", "r") as f:
         data = json.load(f)
-    main_wg = toSingBox2("WARP-MAIN", t_ips[0], "direct",temphi)
+    main_wg = toSingBox2("WARP-MAIN", t_ips[0], "direct", temphi)
     data["outbounds"].insert(3, main_wg)
-    wow_wg = toSingBox2("WARP-WOW", t_ips[1], "WARP-MAIN",temp2hi)
+    wow_wg = toSingBox2("WARP-WOW", t_ips[1], "WARP-MAIN", temp2hi)
     data["outbounds"].insert(4, wow_wg)
     with open("sing-box-hiddify.json", "w") as f:
         f.write(json.dumps(data, indent=2))
