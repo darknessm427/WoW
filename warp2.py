@@ -1,52 +1,56 @@
 import ipaddress, platform, subprocess, os, datetime, base64
 
 warp_cidr = [
-        '188.114.96.0/24',
-        '188.114.97.0/24',
-        '188.114.98.0/24',
-        '188.114.99.0/24',
-        '162.159.192.0/24',
-        '162.159.193.0/24',
-        '162.159.195.0/24',
-        '162.159.204.0/24'
-    ]
+    "188.114.96.0/24",
+    "188.114.97.0/24",
+    "188.114.98.0/24",
+    "188.114.99.0/24",
+    "162.159.192.0/24",
+    "162.159.193.0/24",
+    "162.159.195.0/24",
+    "162.159.204.0/24",
+]
 
 script_directory = os.path.dirname(__file__)
-cfw_ips_txt_path = os.path.join(script_directory, 'cfw-ips.txt')
-result_path = os.path.join(script_directory, 'result.csv')
+cfw_ips_txt_path = os.path.join(script_directory, "cfw-ips.txt")
+result_path = os.path.join(script_directory, "result.csv")
+
 
 def create_ips():
     c = 0
     total_ips = sum(len(list(ipaddress.IPv4Network(cidr))) for cidr in warp_cidr)
 
-    with open(cfw_ips_txt_path, 'w') as file:
+    with open(cfw_ips_txt_path, "w") as file:
         for cidr in warp_cidr:
             ip_addresses = list(ipaddress.IPv4Network(cidr))
             for addr in ip_addresses:
                 c += 1
                 file.write(str(addr))
                 if c != total_ips:
-                    file.write('\n')
+                    file.write("\n")
+
 
 if os.path.exists(cfw_ips_txt_path):
     print("cfw-ips.txt exist.")
 else:
-    print('Creating cfw-ips.txt File.')
+    print("Creating cfw-ips.txt File.")
     create_ips()
-    print('cfw-ips.txt File Created Successfully!')
+    print("cfw-ips.txt File Created Successfully!")
+
 
 def arch_suffix():
     machine = platform.machine().lower()
-    if machine.startswith('i386') or machine.startswith('i686'):
-        return '386'
-    elif machine.startswith(('x86_64', 'amd64')):
-        return 'amd64'
-    elif machine.startswith(('armv8', 'arm64', 'aarch64')):
-        return 'arm64'
-    elif machine.startswith('s390x'):
-        return 's390x'
+    if machine.startswith("i386") or machine.startswith("i686"):
+        return "386"
+    elif machine.startswith(("x86_64", "amd64")):
+        return "amd64"
+    elif machine.startswith(("armv8", "arm64", "aarch64")):
+        return "arm64"
+    elif machine.startswith("s390x"):
+        return "s390x"
     else:
         raise ValueError("Unsupported CPU architecture")
+
 
 arch = arch_suffix()
 
@@ -69,18 +73,21 @@ else:
 
 Bestip = []
 
-with open(result_path, 'r') as csv_file:
+with open(result_path, "r") as csv_file:
     next(csv_file)
     c = 0
     for line in csv_file:
-        Bestip.append(line.split(',')[0])
+        Bestip.append(line.split(",")[0])
         c += 1
         if c == 2:
             break
 
+
 def warp_ip():
     creation_time = os.path.getctime(result_path)
-    formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime("%Y-%m-%d %H:%M:%S")
+    formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
     for i, ip in enumerate(Bestip):
         config_prefix = f'warp://{Bestip[0]}/?ifp=40-80&ifps=50-100&ifpd=2-4&ifpm=m4#@mansor427🇮🇷&&detour=warp://{Bestip[1]}/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m6#ÐΛɌ₭ᑎΞ𐒡𐒡🇩🇪WoW\nwarp://{Bestip[0]}/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m3#@mansor427🇮🇷&&detour=warp://{Bestip[1]}/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m6#ÐΛɌ₭ᑎΞ𐒡𐒡🇩🇪WoW\nwarp://@auto6/?ifp=30-60&ifps=30-60&ifpd=2-4&ifpm=m4#LocalV6&&detour=warp://@auto4/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m4#WoWV4_v6'
 
@@ -93,10 +100,10 @@ sub_info = "//subscription-userinfo: upload=0; download=0; total=107374182400000
 profile_web = "//profile-web-page-url: https://github.com/mansor427\n"
 last_modified = "//last update on: " + warp_ip()[1] + "\n"
 configs = warp_ip()[0]
-with open('warp2.json', 'w') as op:
-    op.write(title + update_interval + sub_info + profile_web  + last_modified + configs)
+with open("warp2.json", "w") as op:
+    op.write(title + update_interval + sub_info + profile_web + last_modified + configs)
 
-with open('Bestip2.txt', 'w') as f:
+with open("Bestip2.txt", "w") as f:
     for ip in Bestip:
         f.write(f"{ip}\n")
 
