@@ -6,7 +6,7 @@ on:
     paths:
       - '**/warp2*'
   schedule:
-    - cron: '*/45 * * * *'
+    - cron: '0 */3 * * *'
   workflow_dispatch:
 
 jobs:
