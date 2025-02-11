@@ -1,52 +1,65 @@
-import ipaddress, platform, subprocess, os, datetime, base64, json
+import ipaddress
+import platform
+import subprocess
+import os
+import datetime
+import base64
+import json
+import shutil
 
 warp_cidr = [
-        '162.159.192.0/24',
-        '162.159.193.0/24',
-        '162.159.195.0/24',
-        '162.159.204.0/24',
-        '188.114.96.0/24',
-        '188.114.97.0/24',
-        '188.114.98.0/24',
-        '188.114.99.0/24'
-    ]
+    "162.159.192.0/24",
+    "162.159.193.0/24",
+    "162.159.195.0/24",
+    "162.159.204.0/24",
+    "188.114.96.0/24",
+    "188.114.97.0/24",
+    "188.114.98.0/24",
+    "188.114.99.0/24",
+]
 
 script_directory = os.path.dirname(__file__)
-ip_txt_path = os.path.join(script_directory, 'ip.txt')
-result_path = os.path.join(script_directory, 'result.csv')
+ip_txt_path = os.path.join(script_directory, "ip.txt")
+result_path = os.path.join(script_directory, "result.csv")
+
 
 def create_ips():
     c = 0
     total_ips = sum(len(list(ipaddress.IPv4Network(cidr))) for cidr in warp_cidr)
 
-    with open(ip_txt_path, 'w') as file:
+    with open(ip_txt_path, "w") as file:
         for cidr in warp_cidr:
             ip_addresses = list(ipaddress.IPv4Network(cidr))
             for addr in ip_addresses:
                 c += 1
                 file.write(str(addr))
                 if c != total_ips:
-                    file.write('\n')
+                    file.write("\n")
+
 
 if os.path.exists(ip_txt_path):
     print("ip.txt exist.")
 else:
-    print('Creating ip.txt File.')
+    print("Creating ip.txt File.")
     create_ips()
-    print('ip.txt File Created Successfully!')
+    print("ip.txt File Created Successfully!")
+
 
 def arch_suffix():
     machine = platform.machine().lower()
-    if machine.startswith('i386') or machine.startswith('i686'):
-        return '386'
-    elif machine.startswith(('x86_64', 'amd64')):
-        return 'amd64'
-    elif machine.startswith(('armv8', 'arm64', 'aarch64')):
-        return 'arm64'
-    elif machine.startswith('s390x'):
-        return 's390x'
+    if machine.startswith("i386") or machine.startswith("i686"):
+        return "386"
+    elif machine.startswith(("x86_64", "amd64")):
+        return "amd64"
+    elif machine.startswith(("armv8", "arm64", "aarch64")):
+        return "arm64"
+    elif machine.startswith("s390x"):
+        return "s390x"
     else:
-        raise ValueError("Unsupported CPU architecture")
+        raise ValueError(
+            "Unsupported CPU architecture. Supported architectures are: i386, i686, x86_64, amd64, armv8, arm64, aarch64, s390x"
+        )
+
 
 arch = arch_suffix()
 
@@ -67,12 +80,13 @@ if process.returncode != 0:
 else:
     print("Warp executed successfully.")
 
+
 def warp_ip():
     counter = 0
     config_prefixes = ""
     creation_time = os.path.getctime(result_path)
     formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime("%Y-%m-%d %H:%M:%S")
-    with open(result_path, 'r') as csv_file:
+    with open(result_path, "r") as csv_file:
         next(csv_file)
         for ips in csv_file:
             counter += 1
@@ -86,7 +100,7 @@ def warp_ip():
 
 
 configs = warp_ip()[0]
-with open('warpauto.json', 'w') as op:
+with open("warpauto.json", "w") as op:
     op.write(configs)
 
 os.remove(ip_txt_path)
