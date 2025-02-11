@@ -10,7 +10,7 @@
     $warp .= "\n";
     $warp .= "warp://@auto/?ifp=40-80&ifps=50-100&ifpd=2-4&ifpm=m4#🇮🇷𓄂𓆃 &&detour=warp://@auto/?ifp=30-60&ifps=40-80&ifpd=1-3&ifpm=m6#🇩🇪@darkness_427";
     $warp .= "\n";
-    warp: .= "warp://@auto6/?ifp=30-60&ifps=30-60&ifpd=4-8&ifpm=m4#V6&&detour=warp://@auto4/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m4#WoWVv4_ÐΛɌ₭ᑎΞ𐒡𐒡🇩🇪WoW";
+    $warp .= "warp://@auto6/?ifp=30-60&ifps=30-60&ifpd=4-8&ifpm=m4#V6&&detour=warp://@auto4/?ifp=50-100&ifps=30-60&ifpd=2-4&ifpm=m4#WoWVv4_ÐΛɌ₭ᑎΞ𐒡𐒡🇩🇪WoW";
     $warp .= "\n";
 
    $i = 1;
