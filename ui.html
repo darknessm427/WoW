@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background-color: #0f3460;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 300px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    select, button {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #e94560;
+      color: white;
+      cursor: pointer;
+    }
+    #result {
+      word-break: break-all;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>ساخت توکن امن</h1>
+    <select id="sub">
+      <option value="xray">Xray</option>
+      <option value="singbox">Sing-box</option>
+      <option value="singbox-hiddify">Sing-box Hiddify</option>
+      <option value="warp">WARP</option>
+      <option value="warp2">WARP2</option>
+      <option value="warpauto">WARP Auto</option>
+    </select>
+    <button onclick="generateToken()">ایجاد لینک</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function generateToken() {
+      const sub = document.getElementById('sub').value;
+      // **توجه:** استفاده از کلید در سمت کاربر امن نیست؛ فقط برای محیط‌های محدود (مثلاً admin) پیشنهاد می‌شود.
+      const SECRET = "my_super_secret_key";  // این مقدار باید با کلید صحیح شما جایگزین شود
+      const payload = {
+        sub,
+        exp: Date.now() + 3 * 24 * 60 * 60 * 1000
+      };
+      const payloadB64 = btoa(JSON.stringify(payload))
+                         .replace(/=/g, '')
+                         .replace(/\+/g, '-')
+                         .replace(/\//g, '_');
+
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey("raw", encoder.encode(SECRET), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+      const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(payloadB64));
+      const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+                      .replace(/=/g, '')
+                      .replace(/\+/g, '-')
+                      .replace(/\//g, '_');
+
+      const token = `${payloadB64}.${sigB64}`;
+      const link = `https://YOUR_WORKER_URL.workers.dev/?token=${token}`;
+      document.getElementById('result').innerHTML = `<strong>لینک شما:</strong><br><code>${link}</code>`;
+    }
+  </script>
+</body>
+</html>
