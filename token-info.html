@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>اطلاعات توکن</title>
+  <style>
+    body {
+      background: #0f172a;
+      font-family: 'Vazir', sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      direction: rtl;
+    }
+    .popup {
+      background: #1e293b;
+      color: #f1f5f9;
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-width: 90%;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    .popup h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .popup p {
+      font-size: 18px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="popup" id="popup">
+    <h1>اطلاعات توکن</h1>
+    <p id="token-info">در حال بارگذاری...</p>
+  </div>
+
+  <script>
+    // توکن رمزگذاری شده
+    const tokenBase64 = "dXNlcjEuMTc0NDg1MDg5MA==";
+    const decoded = atob(tokenBase64);
+    const parts = decoded.split(".");
+    const timestamp = parseInt(parts[1]) * 1000;
+    const expireDate = new Date(timestamp);
+    
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    };
+
+    const info = `
+      شناسه کاربر: <b>${parts[0]}</b><br>
+      تاریخ انقضا: <b>${expireDate.toLocaleDateString('fa-IR', options)}</b>
+    `;
+
+    document.getElementById("token-info").innerHTML = info;
+  </script>
+</body>
+</html>
