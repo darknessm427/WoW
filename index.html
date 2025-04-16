@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>اطلاعات توکن</title>
+  <link href="https://cdn.jsdelivr.net/npm/@fontsource/vazirmatn@latest/font.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    body {
+      background-color: #0f172a;
+      font-family: 'Vazirmatn', sans-serif;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+    .card {
+      background-color: #1e293b;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #00000044;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    .info {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    #qrcode {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>اطلاعات توکن</h1>
+    <div id="info" class="info"></div>
+    <div id="qrcode"></div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    const type = urlParams.get("type");
+    const expire = urlParams.get("expire");
+
+    const base64Decode = (str) => decodeURIComponent(escape(atob(str)));
+
+    function toPersianDate(timestamp) {
+      const date = new Date(timestamp * 1000);
+      return date.toLocaleString("fa-IR-u-nu-latn", {
+        dateStyle: "full",
+        timeStyle: "short",
+      });
+    }
+
+    try {
+      const decoded = base64Decode(token || "");
+      const username = decoded.split(".")[0];
+      const expireText = toPersianDate(expire);
+      document.getElementById("info").innerHTML = `
+        شناسه کاربر: <b>${username}</b><br>
+        تاریخ انقضا: ${expireText}
+      `;
+
+      const link = `https://red-shadow-617jjjj.lyn11.workers.dev/?token=${token}&type=${type}`;
+      new QRCode(document.getElementById("qrcode"), {
+        text: link,
+        width: 128,
+        height: 128,
+        colorDark : "#ffffff",
+        colorLight : "#1e293b",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+
+    } catch (err) {
+      document.getElementById("info").innerText = "خطا در بارگذاری اطلاعات.";
+    }
+  </script>
+</body>
+</html>
