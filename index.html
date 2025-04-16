@@ -1,76 +1,87 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<!DOCTYPE html><html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>اطلاعات توکن</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>توکن VPN</title>
   <style>
     body {
-      font-family: "Vazir", sans-serif;
-      background-color: #0f172a;
+      font-family: sans-serif;
+      background: #0f172a;
       color: white;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      direction: rtl;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
     }
     .card {
-      background-color: #1e293b;
+      background: #1e293b;
+      padding: 20px;
       border-radius: 20px;
-      padding: 30px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      max-width: 500px;
+      width: 100%;
       text-align: center;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      width: 90%;
-      max-width: 400px;
     }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-    }
-    .info {
-      font-size: 1.2rem;
-      margin-bottom: 15px;
-    }
-    #qrcode {
+    .qr {
       margin-top: 20px;
+    }
+    .links {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .link {
+      margin: 5px 0;
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>اطلاعات توکن</h1>
-    <div class="info" id="username">شناسه کاربر: نامشخص</div>
-    <div class="info" id="expire">تاریخ انقضا: نامعتبر</div>
-    <div id="qrcode"></div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-  <script>
+    <h2>توکن شما</h2>
+    <p id="username">نام کاربری: </p>
+    <p id="expire">تاریخ انقضا: </p>
+    <div class="qr">
+      <canvas id="qrcode"></canvas>
+    </div>
+    <div class="links" id="links"></div>
+  </div>  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>  <script>
     const params = new URLSearchParams(window.location.search);
-    const user = params.get("user");
-    const expire = params.get("expire");
-    const link = params.get("link");
+    const token = params.get("token");
+    if (!token) {
+      document.body.innerHTML = "توکن پیدا نشد";
+    } else {
+      const parts = token.split("|");
+      const user = parts[0];
+      const timestamp = parseInt(parts[1]);
+      const expireDate = new Date(timestamp);
+      const faDate = expireDate.toLocaleString('fa-IR');
 
-    if (user) {
-      document.getElementById("username").textContent = `شناسه کاربر: ${user}`;
-    }
+      document.getElementById("username").textContent += user;
+      document.getElementById("expire").textContent += faDate;
 
-    if (expire && !isNaN(expire)) {
-      const d = new Date(+expire * 1000);
-      const farsiDate = d.toLocaleDateString("fa-IR-u-nu-latn", {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      QRCode.toCanvas(document.getElementById("qrcode"), token);
+
+      const subs = [
+        "https://raw.githubusercontent.com/michaelrezza/wow/refs/heads/main/Xray-WoW.json",
+        "https://raw.githubusercontent.com/michaelrezza/wow/refs/heads/main/sing-box-hiddify.json",
+        "https://raw.githubusercontent.com/michaelrezza/wow/refs/heads/main/sing-box.json",
+        "https://raw.githubusercontent.com/michaelrezza/wow/refs/heads/main/warp.json",
+        "https://raw.githubusercontent.com/michaelrezza/wow/refs/heads/main/warp2.json",
+        "https://raw.githubusercontent.com/michaelrezza/wow/refs/heads/main/warpauto.json"
+      ];
+
+      const linksDiv = document.getElementById("links");
+      subs.forEach(link => {
+        const a = document.createElement("a");
+        a.href = `${link}?token=${encodeURIComponent(token)}`;
+        a.textContent = a.href;
+        a.className = "link";
+        a.target = "_blank";
+        linksDiv.appendChild(a);
+        linksDiv.appendChild(document.createElement("br"));
       });
-      const time = d.toLocaleTimeString("fa-IR-u-nu-latn", { hour: '2-digit', minute: '2-digit' });
-      document.getElementById("expire").textContent = `تاریخ انقضا: ${farsiDate} ساعت ${time}`;
     }
-
-    if (link) {
-      QRCode.toCanvas(document.getElementById("qrcode"), link, { width: 200 }, function (error) {
-        if (error) console.error(error);
-      });
-    }
-  </script>
-</body>
+  </script></body>
 </html>
