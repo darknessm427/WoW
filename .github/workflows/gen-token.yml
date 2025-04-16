@@ -1,0 +1,32 @@
+name: Generate Tokens
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Generate tokens
+        run: |
+          mkdir -p tokens
+          USERS=("user1" "user2")
+
+          for USERNAME in "${USERS[@]}"; do
+            EXP=$(($(date +%s) + 86400))
+            TOKEN=$(echo "$USERNAME.$EXP" | base64)
+            echo "$USERNAME: $TOKEN" >> tokens/list.txt
+          done
+
+      - name: Commit tokens
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: github-actions
+          author_email: github-actions@github.com
+          message: 'update tokens'
+          add: 'tokens/list.txt'
