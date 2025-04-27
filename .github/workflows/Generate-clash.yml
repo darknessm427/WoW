@@ -23,7 +23,7 @@ jobs:
       - name: List directory contents
         run: |
           ls -R assets
-          cat assets/requirements.txt
+          cat assets/requirementsyml.txt
 
       - name: Set up Python
         uses: actions/setup-python@v5
