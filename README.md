@@ -3,7 +3,7 @@
 
 <br>  
 
-<h3 align="center">$$\color{#a5a5a5} \large \text{لینک ساب دلخواه خود را کپی و در کلاینت هیدیفای وارد کنید}$$</h3>  
+<h3 align="center">$$\color{silver} \large \text{لینک ساب دلخواه خود را کپی و در کلاینت هیدیفای وارد کنید}$$</h3>  
 
 <h4 align="left">$$\color{#a5a5a5} \large \text{1- Warp on Warp}$$</h4>  
 
@@ -11,19 +11,19 @@
 https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/subwarp/warp
 ```  
 
-<h4 align="left">$$\color{#a5a5a5} \large \text{2- Warp-auto}$$</h4>  
+<h4 align="left">$$\color{silver} \large \text{2- Warp-auto}$$</h4>  
 
 ```POV-Ray SDL
 https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/warpauto.json
 ```  
 
-<h4 align="left">$$\color{#a5a5a5} \large \text{3- Warp-plus}$$</h4>  
+<h4 align="left">$$\color{silver} \large \text{3- Warp-plus}$$</h4>  
 
 ```POV-Ray SDL
 https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/warp2.json
 ```  
 
-<h4 align="left">$$\color{#a5a5a5} \large \text{4- Warp for hiddify, sing mode}$$</h4>  
+<h4 align="left">$$\color{silver} \large \text{4- Warp for hiddify, sing mode}$$</h4>  
 
 ```POV-Ray SDL
 https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/sing-box-hiddify.json
