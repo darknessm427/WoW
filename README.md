@@ -1,5 +1,5 @@
 
-<h1 align="center">$$\color{#a5a5a5} \large \text{Warp Subscription Links}$$</h1>
+<h1 align="center">$$\color{Gold} \large \text{Warp Subscription Links}$$</h1>
 
 <br>  
 
