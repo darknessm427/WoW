@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip || exit 1
-          pip install -r assets/requirements.txt || exit 1
+          pip install -r assets/requirementsyml.txt || exit 1
        
       # Run ;⁠)
       - name: Run config generation script
