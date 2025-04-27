@@ -3,7 +3,7 @@
 
 <br>  
 
-<h3 align="center">$$\color{silver} \large \text{لینک ساب دلخواه خود را کپی و در کلاینت هیدیفای وارد کنید}$$</h3>  
+<h3 align="center">$$\color{Silver} \large \text{لینک ساب دلخواه خود را کپی و در کلاینت هیدیفای وارد کنید}$$</h3>  
 
 <h4 align="left">$$\color{#a5a5a5} \large \text{1- Warp on Warp}$$</h4>  
 
