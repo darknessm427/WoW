@@ -1,0 +1,169 @@
+mixed-port: 7890
+ipv6: true
+allow-lan: true
+mode: rule
+log-level: warning
+disable-keep-alive: false
+keep-alive-idle: 10
+keep-alive-interval: 15
+unified-delay: false
+geo-auto-update: true
+geo-update-interval: 168 # Added (hours, e.g., 7 days)
+
+# External Controller & UI
+external-controller: 127.0.0.1:9090
+external-ui-url: https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip
+external-ui: ui
+external-controller-cors:
+  allow-origins:
+    - '*'
+  allow-private-network: true
+profile:
+  store-selected: true
+  store-fake-ip: true
+dns:
+  enable: true
+  listen: 0.0.0.0:1053
+  ipv6: true
+  respect-rules: true
+  use-system-hosts: false
+  nameserver:
+    - 1.1.1.1#🔰 PROXIES
+  proxy-server-nameserver:
+    - 8.8.8.8#DIRECT
+  nameserver-policy:
+    # Use 8.8.8.8#DIRECT for these common domains، Especially GitHub
+    'raw.githubusercontent.com': 8.8.8.8#DIRECT
+    'time.apple.com': 8.8.8.8#DIRECT
+    'rule-set:ir': # Route Iranian domains via DIRECT DNS
+      - 8.8.8.8#DIRECT
+    'rule-set:openai': 178.22.122.100#DIRECT # Specific DNS for OpenAI (Sekan DNS)
+  # Enhanced Mode (Fake IP) - Crucial change
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16 # Standard fake IP range
+  fake-ip-filter:
+    - 'geosite:private' # Filter private domains from fake IP
+
+# TUN Settings
+tun:
+  enable: true
+  stack: mixed
+  auto-route: true
+  strict-route: true
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  mtu: 9000
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: false
+  sniff:
+    HTTP:
+      ports:
+        - 80
+        - 8080
+        - 8880
+        - 2052
+        - 2082
+        - 2086
+        - 2095
+    TLS:
+      ports:
+        - 443
+        - 8443
+        - 2053
+        - 2083
+        - 2087
+        - 2096
+proxies: []
+
+# Proxy Groups - Will be populated by the Python script
+proxy-groups: []
+
+# Rule Providers
+rule-providers:
+  private:
+    type: http
+    format: yaml
+    behavior: domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.yaml
+    path: ./ruleset/private.yaml
+    interval: 86400
+  private-cidr:
+    type: http
+    format: yaml
+    behavior: ipcidr
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.yaml
+    path: ./ruleset/private-cidr.yaml
+    interval: 86400
+  openai:
+    type: http
+    format: yaml
+    behavior: domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.yaml
+    path: ./ruleset/openai.yaml
+    interval: 86400
+  # --- Chocolate4U Rules ---
+  ir:
+    type: http
+    format: text
+    behavior: domain
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/ir.txt
+    path: ./ruleset/ir.txt
+    interval: 86400
+  ir-cidr:
+    type: http
+    format: text
+    behavior: ipcidr
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/ircidr.txt
+    path: ./ruleset/ir-cidr.txt
+    interval: 86400
+  malware:
+    type: http
+    format: text
+    behavior: domain
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt
+    path: ./ruleset/malware.txt
+    interval: 86400
+  phishing:
+    type: http
+    format: text
+    behavior: domain
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt
+    path: ./ruleset/phishing.txt
+    interval: 86400
+  cryptominers:
+    type: http
+    format: text
+    behavior: domain
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.txt
+    path: ./ruleset/cryptominers.txt
+    interval: 86400
+  category-ads-all:
+    type: http
+    format: text
+    behavior: domain
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/category-ads-all.txt
+    path: ./ruleset/category-ads-all.txt
+    interval: 86400
+rules:
+  - RULE-SET,malware,REJECT
+  - RULE-SET,phishing,REJECT
+  - RULE-SET,cryptominers,REJECT
+  - RULE-SET,category-ads-all,REJECT
+  - RULE-SET,private,DIRECT
+  - RULE-SET,ir,DIRECT
+  - RULE-SET,openai,DIRECT # Route OpenAI directly for using ChatGPT in iran
+  # Direct IP rules (Private CIDR, Iran CIDR)
+  - RULE-SET,private-cidr,DIRECT,no-resolve # Add no-resolve for private IPs
+  - RULE-SET,ir-cidr,DIRECT
+  - MATCH,🔰 PROXIES # Placeholder, Script will update it
+
+ntp:
+  enable: true
+  server: time.apple.com
+  port: 123
+  interval: 30
