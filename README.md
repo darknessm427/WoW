@@ -7,7 +7,7 @@
 
 <h4 align="left">$$\color{#a5a5a5} \large \text{1- Warp on Warp}$$</h4>  
 
-```POV-Ray SDL
+```mupad
 https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/subwarp/warp
 ```  
 
@@ -19,7 +19,7 @@ https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/warpauto.json
 
 <h4 align="left">$$\color{silver} \large \text{3- Warp-plus}$$</h4>  
 
-```POV-Ray SDL
+```CSS
 https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/warp2.json
 ```  
 
