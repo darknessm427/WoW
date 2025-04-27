@@ -3,7 +3,7 @@
 
 <br>  
 
-<h3 align="center">$$\color{#a5a5a5} \large \text{لینک ساب دلخواه خود را کپی و در کلاینت هیدیفای وارد کنید}$$</h3>  
+<h3 align="center">$$\color{#a5a5a5} \large \text{لینک ساب دلخواه خود را کپی و در کلاینت Hiddify وارد کنید}$$</h3>  
 
 <h4 align="left">$$\color{#a5a5a5} \large \text{1- Warp on Warp}$$</h4>  
 
@@ -31,7 +31,7 @@ https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/sing-box-hidd
 
 <br><br>    
 
-<h2 align="center">$$\color{#a5a5a5} \large \text{لینک ساب زیر را کپی و در کلاینت سینگ‌باکس وارد کنید}$$</h2>  
+<h2 align="center">$$\color{#a5a5a5} \large \text{لینک ساب زیر را کپی و در کلاینت Singbox وارد کنید}$$</h2>  
 
 <h4 align="left">$$\color{#a5a5a5} \large \text{5- Warp for SingBox}$$</h4>  
 
@@ -41,10 +41,20 @@ https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/sing-box.json
 
 <br><br>    
 
-<h2 align="center">$$\color{#a5a5a5} \large \text{لینک ساب زیر را کپی و به دلخواه در یکی از کلاینت‌های ویتوری‌، نیکا یا مهسا ان‌جی وارد کنید}$$</h2>   
+<h2 align="center">$$\color{#a5a5a5} \large \text{لینک ساب زیر را کپی و به دلخواه در یکی از کلاینت‌های V2rayNG, NikaNG یا MahsaNG ان‌جی وارد کنید}$$</h2>   
 
 <h4 align="left">$$\color{#a5a5a5} \large \text{6- Warp on Warp for Xray}$$</h4>  
 
 ```POV-Ray SDL
 https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/Xray-WoW.json
+```
+
+<br><br>    
+
+<h2 align="center">$$\color{#a5a5a5} \large \text{لینک ساب زیر را کپی و به دلخواه در یکی از کلاینت‌های Fl Clash، Clash metaوارد کنید}$$</h2>   
+
+<h4 align="left">$$\color{#a5a5a5} \large \text{7- wireguard amenzia for Clash}$$</h4>  
+
+```POV-Ray SDL
+https://raw.githubusercontent.com/darknessm427/WoW/refs/heads/main/clash-wg.yml
 ```  
