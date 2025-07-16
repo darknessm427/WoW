@@ -55,5 +55,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config credential.helper store
           git add -A
-          git commit -m "👾 Auto update - $(TZ='Asia/Tehran' date '+%H:%M:%S')"
+          git commit -m "🗽𓄂𓆃 Auto update - $(TZ='Asia/Tehran' date '+%H:%M:%S')"
           git push
