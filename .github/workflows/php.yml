@@ -48,7 +48,7 @@ jobs:
       - name: Commit changes with timestamp
         run: |
           git add -A
-          git diff --cached --quiet || git commit -m "🤖Auto update $(TZ='Asia/Tehran' date '+%H:%M:%S')"
+          git diff --cached --quiet || git commit -m "🗽𓄂𓆃 Auto update $(TZ='Asia/Tehran' date '+%H:%M:%S')"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
