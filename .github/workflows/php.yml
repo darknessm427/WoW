@@ -2,18 +2,13 @@ name: 'WARP_PHP'
 
 on:
   push:
-    branches: ['main']
+    branches: 'main'
     paths:
       - '**/warpauto.*'
       - 'subwarp/warp'
   schedule:
-    - cron: '30 3 * * *'
+    - cron: '0 14 * * *'
   workflow_dispatch:
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build:
@@ -29,13 +24,11 @@ jobs:
           fetch-depth: 0
           submodules: 'recursive' 
           github_token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          NODE_VERSION: '20'
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
 
       - name: Execute PHP script
         run: php warpauto.php || exit 1

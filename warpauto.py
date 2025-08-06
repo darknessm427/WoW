@@ -3,9 +3,6 @@ import platform
 import subprocess
 import os
 import datetime
-import base64
-import json
-import shutil
 
 warp_cidr = [
     "8.6.112.0/24",
@@ -14,8 +11,13 @@ warp_cidr = [
     "8.35.211.0/24",
     "8.39.125.0/24",
     "8.39.204.0/24",
-    "8.39.214.0/24",
     "8.47.69.0/24",
+    "162.159.192.0/24",
+    "162.159.195.0/24",
+    "188.114.96.0/24",
+    "188.114.97.0/24",
+    "188.114.98.0/24",
+    "188.114.99.0/24",
 ]
 
 script_directory = os.path.dirname(__file__)
@@ -71,10 +73,9 @@ os.chmod("warp", 0o755)
 command = "./warp >/dev/null 2>&1"
 print("Scanning ips...")
 process = subprocess.Popen(command, shell=True)
-# Wait for the process to finish
+
 process.wait()
 
-# Check if there's any error
 if process.returncode != 0:
     print("Error: Warp execution failed.")
 else:
@@ -85,7 +86,9 @@ def warp_ip():
     counter = 0
     config_prefixes = ""
     creation_time = os.path.getctime(result_path)
-    formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime("%Y-%m-%d %H:%M:%S")
+    formatted_time = datetime.datetime.fromtimestamp(creation_time).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
     with open(result_path, "r") as csv_file:
         next(csv_file)
         for ips in csv_file:
@@ -93,8 +96,10 @@ def warp_ip():
             if counter == 5:
                 break
             else:
-                ip = ips.split(',')[0]
-                config_prefix = f'warp://{ip}/?ifp=40-80&ifps=50-100&ifpd=2-4&ifpm=m4#🇮🇷𓄂𓆃\n'
+                ip = ips.split(",")[0]
+                config_prefix = (
+                    f"warp://{ip}/?ifp=40-80&ifps=50-100&ifpd=2-4&ifpm=m4#🇮🇷𓄂𓆃\n"
+                )
                 config_prefixes += config_prefix
     return config_prefixes, formatted_time
 

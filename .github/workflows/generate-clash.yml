@@ -2,9 +2,13 @@ name: clash-meta + amnezia
 
 on:
   push:
-    branches: ['main']
+    branches: 'main'
+    paths:
+      - '**/generate-clash.*'
+      - '**/*.yml'
+      - '!.github/workflows/*.yml'
   schedule:
-    - cron: '30 1 * * *'
+    - cron: '0 13 * * *'
   workflow_dispatch:
 
 jobs:
@@ -28,16 +32,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           cache: pip
-          architecture: x64
 
       # Creating a cache for increased speed and performance, also saving resources
       - name: Cache Python packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('assets/requirementsyml.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -46,7 +49,7 @@ jobs:
           python -m pip install --upgrade pip || exit 1
           pip install -r assets/requirementsyml.txt || exit 1
        
-      # Run ;⁠)
+      # Run script
       - name: Run config generation script
         run: |
           python assets/generate-clash.py 2>&1 || { echo "Script failed with exit code $?"; exit 1; }
@@ -59,8 +62,8 @@ jobs:
           if git status --porcelain | grep -q "clash-wg.yml" || git status --porcelain; then
             echo "Changes detected. Committing and pushing."
             git add clash-wg.yml
-            git commit -m "🗽𓄂𓆃 Auto: Update clash-wg configurations at: $(TZ='Asia/Tehran' date '+%H:%M:%S')" -m "Wireguard private key, addresses, reserved, and all IPs have been renewed"
-            git -c committer.name="darknessm427" -c committer.email="171773043+darknessm427@users.noreply.github.com" push
+            git commit -m "Auto: Update clash-wg configurations at: $(TZ='Asia/Tehran' date '+%H:%M:%S')" -m "Wireguard private key, addresses, reserved, and all IPs have been renewed" --author="darknessm427 <171773043+darknessm427@users.noreply.github.com>"
+            git push
           else
             echo "No changes detected in config files."
           fi
