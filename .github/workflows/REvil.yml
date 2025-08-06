@@ -1,10 +1,10 @@
-name: warp_REvil
+name: REvil Warp
 
 on:
   push:
-    branches: ['main']
+    branches: 'main'
     paths:
-      - 'warpREvil.py'
+      - 'warpREvil.*'
       - '**/*.json'
   schedule:
     - cron: '0 3 * * *'
@@ -13,7 +13,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 15
 
     steps:
       - name: Checkout Repository
@@ -28,13 +28,12 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
-          architecture: x64
 
       - name: Cache Python packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('assets/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -61,7 +60,7 @@ jobs:
             git commit -m "🗽𓄂𓆃 Auto update $(TZ='Asia/Tehran' date '+%H:%M:%S')" \
                        -m "Warp private key, addresses, reserved and all IP's have been renewed"
             git -c author.name="darknessm427" -c author.email="171773043+darknessm427@users.noreply.github.com" \
-                -c committer.name="github-actions[bot]" -c committer.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                -c committer.name="Github Actions" -c committer.email="actions@github.com" \
                 commit --amend --no-edit
             git push || exit 1
           else

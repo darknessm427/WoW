@@ -1,19 +1,14 @@
-name: warpauto
+name: warp-scanner
 
 on:
   push:
-    branches: ['main']
+    branches: 'main'
     paths:
       - 'warpauto.py'
       - '**/*.json'
   schedule:
     - cron: '20 4 * * *'
   workflow_dispatch:
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build:
@@ -26,18 +21,17 @@ jobs:
           submodules: 'recursive'
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Python 3.13
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: pip
-          architecture: x64
 
       - name: Cache Python packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('assets/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -51,8 +45,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+          git config --global user.email "Github Actions"
+          git config --global user.name "actions@github.com]"
           git config credential.helper store
           git add -A
           git commit -m "🗽𓄂𓆃 Auto update - $(TZ='Asia/Tehran' date '+%H:%M:%S')"

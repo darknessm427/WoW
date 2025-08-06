@@ -14,23 +14,22 @@ from tenacity import (
     retry,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
+    retry_if_exception,
 )
 
 # --- Configuration ---
-NUM_PROXY_PAIRS = int(os.environ.get("NUM_PROXY_PAIRS", 8))  # Number of proxy pairs to generate
-NUM_IPV6_ENTRY_ENDPOINTS = int(os.environ.get("NUM_IPV6_ENTRY_ENDPOINTS", 2))  # How many Entry proxies should use an IPv6 server endpoint
+NUM_PROXY_PAIRS = int(os.environ.get("NUM_PROXY_PAIRS", 8))
+NUM_IPV6_ENTRY_ENDPOINTS = int(os.environ.get("NUM_IPV6_ENTRY_ENDPOINTS", 2))
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # Where the script is running (e.g., RepositoryName/assets)
-PARENT_DIR = os.path.dirname(SCRIPT_DIR)  # Parent directory (repository root)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.dirname(SCRIPT_DIR)
 
 # Template is in the same directory as the script
 CONFIG_TEMPLATE_PATH = os.path.join(SCRIPT_DIR, "clash-wg-template.yml") 
 
 # Output files in repository root
-OUTPUT_YAML_FILENAME = os.path.join(PARENT_DIR, "clash-wg.yml")  # Output directly in root
-CACHE_FILE_PATH = os.path.join(PARENT_DIR, "key_cache.json")  # Cache directly in root
-
+OUTPUT_YAML_FILENAME = os.path.join(PARENT_DIR, "clash-wg.yml")
+CACHE_FILE_PATH = os.path.join(PARENT_DIR, "key_cache.json")
 
 # --- Proxy Naming Configuration ---
 DIALER_PROXY_BASE_NAME = os.environ.get("DIALER_PROXY_BASE_NAME", "GER-DIALER")
@@ -38,7 +37,6 @@ ENTRY_PROXY_BASE_NAME = os.environ.get("ENTRY_PROXY_BASE_NAME", "IRN-ENTRY")
 MAIN_SELECTOR_GROUP_NAME = os.environ.get("MAIN_SELECTOR_GROUP_NAME", "🔰 PROXIES")
 DIALER_URL_TEST_GROUP_NAME = f"🇩🇪 AUTO-{DIALER_PROXY_BASE_NAME}"
 ENTRY_URL_TEST_GROUP_NAME = f"🇮🇷 AUTO-{ENTRY_PROXY_BASE_NAME}"
-# --- End Configuration ---
 
 # Log settings
 logging.basicConfig(
@@ -76,9 +74,9 @@ def generate_private_key():
     private_bytes = private_key.private_bytes(
         encoding=serialization.Encoding.Raw,
         format=serialization.PrivateFormat.Raw,
-        encryption_algorithm=serialization.NoEncryption()
+        encryption_algorithm=serialization.NoEncryption(),
     )
-    
+
     key = list(private_bytes)
     key[0] &= 248
     key[31] &= 127
@@ -118,11 +116,32 @@ def save_cached_keys(keys):
 
 
 # Function to register a public key with Cloudflare API using tenacity for retries
+def should_retry(exception):
+    if isinstance(exception, RateLimitError):
+        return True
+    if isinstance(exception, requests.exceptions.HTTPError):
+        if 500 <= exception.response.status_code < 600:
+            return True
+    return False
+
+
+def log_before_sleep(retry_state):
+    exc = retry_state.outcome.exception()
+    if isinstance(exc, requests.exceptions.HTTPError):
+        status_code = exc.response.status_code if exc.response is not None else "N/A"
+        logger.warning(f"Retrying due to HTTP {status_code} error: {exc}")
+    elif isinstance(exc, RateLimitError):
+        logger.warning("Retrying due to Cloudflare rate limiting (429)")
+    else:
+        logger.warning(f"Retrying due to exception: {exc}")
+
+
 @retry(
-    stop=stop_after_attempt(4),  # Retry up to 4 times
-    wait=wait_exponential(multiplier=1, min=5, max=15),  # Exponential backoff
-    retry=retry_if_exception_type(RateLimitError),  # Only retry on RateLimitError
+    stop=stop_after_attempt(6),  # Retry up to 6 times
+    wait=wait_exponential(multiplier=1, min=5, max=60),  # Exponential backoff
+    retry=retry_if_exception(should_retry),
     reraise=True,  # Reraise the exception if all retries fail
+    before_sleep=log_before_sleep,
 )
 def register_key_on_CF(pub_key):
     logger.info(f"Registering public key: {pub_key[:10]}... with Cloudflare API")
@@ -153,7 +172,7 @@ def register_key_on_CF(pub_key):
             "Accept-Encoding": "gzip",
             "User-Agent": "okhttp/3.12.1",
         }
-        
+
         time.sleep(random.uniform(1.5, 2.5))
         with requests.post(url, data=bodyString, headers=headers, timeout=25) as r:
             if r.status_code == 429:
@@ -295,10 +314,16 @@ ipv6_prefixes = ["2606:4700:d1", "2606:4700:d0"]
 
 # IPv4 prefixes for generating endpoints
 ipv4_prefixes = [
+    "8.6.112.",
+    "8.34.70.",
+    "8.34.146.",
+    "8.35.211.",
+    "8.39.125.",
+    "8.39.204.",
+    "8.39.214.",
+    "8.47.69.",
     "162.159.192.",
-    "162.159.193.",
     "162.159.195.",
-    "162.159.204.",
     "188.114.96.",
     "188.114.97.",
     "188.114.98.",
@@ -306,7 +331,10 @@ ipv4_prefixes = [
 ]
 
 # Available ports for endpoint generation
-ports_str = os.environ.get("AVAILABLE_PORTS", "500 854 859 864 878 880 890 891 894 903 908 928 934 939 942 943 945 946 955 968 987 988 1002 1010 1014 1018 1070 1074 1180 1387 1701 1843 2371 2408 2506 3138 3476 3581 3854 4177 4198 4233 4500 5279 5956 7103 7152 7156 7281 7559 8319 8742 8854 8886")
+ports_str = os.environ.get(
+    "AVAILABLE_PORTS",
+    "500 854 859 864 878 880 890 891 894 903 908 928 934 939 942 943 945 946 955 968 987 988 1002 1010 1014 1018 1070 1074 1180 1387 1701 1843 2371 2408 2506 3138 3476 3581 3854 4177 4198 4233 4500 5279 5956 7103 7152 7156 7281 7559 8319 8742 8854 8886",
+)
 available_ports = [int(p) for p in ports_str.split()]
 
 # Cloudflare's fixed public key for WireGuard
@@ -323,11 +351,11 @@ def generate_ipv4_endpoint():
     return server, port
 
 
-# Function to generate a random IPv6 endpoint 
+# Function to generate a random IPv6 endpoint
 def generate_ipv6_endpoint():
     prefix = random.choice(ipv6_prefixes)
-    suffix = ''.join(random.choice('0123456789abcdef') for _ in range(16))
-    formatted_suffix = ':'.join(suffix[i:i+4] for i in range(0, 16, 4))
+    suffix = "".join(random.choice("0123456789abcdef") for _ in range(16))
+    formatted_suffix = ":".join(suffix[i : i + 4] for i in range(0, 16, 4))
     server = f"{prefix}::{formatted_suffix}"
     port = random.choice(available_ports)
     logger.debug(f"Generated IPv6 endpoint: {server}:{port}")
@@ -360,26 +388,28 @@ def main():
             )
             sys.exit(1)
         except yaml.YAMLError as e:
-            logger.error(f"Invalid YML syntax in config file '{CONFIG_TEMPLATE_PATH}': {e}")
+            logger.error(
+                f"Invalid YML syntax in config file '{CONFIG_TEMPLATE_PATH}': {e}"
+            )
             sys.exit(1)
 
         # Generate/retrieve keys for dialer and entry proxies
         logger.info("Binding keys for Dialer proxies...")
-        priv_key_dialer, reserved_dialer, ip_v4_dialer, ip_v6_dialer = bind_keys("dialer")
+        priv_key_dialer, reserved_dialer, ip_v4_dialer, ip_v6_dialer = bind_keys(
+            "dialer"
+        )
 
         logger.info("Binding keys for Entry proxies...")
         priv_key_entry, reserved_entry, ip_v4_entry, ip_v6_entry = bind_keys("entry")
 
         # Prepare unique interface IPs, adding CIDR notation
-        ip_dialer = f"{ip_v4_dialer}/32" if ip_v4_dialer else "172.16.0.2/32"
+        ip_dialer = "172.16.0.3/32"
         ipv6_dialer = (
             f"{ip_v6_dialer}/128"
             if ip_v6_dialer
             else "2606:4700:110:8867:3f4a:906:1933:43c5/128"
         )
-        ip_entry = (
-            f"{ip_v4_entry}/32" if ip_v4_entry else "172.16.0.3/32"
-        )  # Use a fallback
+        ip_entry = "172.16.0.2/32"
         ipv6_entry = (
             f"{ip_v6_entry}/128"
             if ip_v6_entry
@@ -393,6 +423,7 @@ def main():
         dialer_proxy_names = []
         entry_proxy_names = []
         ipv6_endpoint_count = 0  # Counter for limiting IPv6 endpoints
+        logger.info(f"IPv6 endpoint count: {ipv6_endpoint_count}")
 
         logger.info(f"Generating {NUM_PROXY_PAIRS} proxy pairs...")
         for i in range(NUM_PROXY_PAIRS):
@@ -404,7 +435,7 @@ def main():
             dialer_proxy_names.append(dialer_proxy_name)
 
             # --- Choose Dialer endpoint based on pair number ---
-            if pair_num <= 4:
+            if pair_num <= 6:
                 logger.debug(
                     f"Using IPv4 endpoint for Dialer proxy {pair_num} (WiFi compatibility)"
                 )
@@ -420,6 +451,7 @@ def main():
                 "type": "wireguard",
                 "ip": ip_dialer,
                 "ipv6": ipv6_dialer,
+                "ip-version": "dual",
                 "private-key": priv_key_dialer,
                 "server": server_dialer,
                 "port": port_dialer,
@@ -431,30 +463,28 @@ def main():
                 "dialer-proxy": entry_proxy_name,
             }
             proxies_list.append(dialer_proxy)
-            
+
             # --- Create Entry Proxy SECOND ---
             entry_proxy_names.append(entry_proxy_name)
-            
+
             # --- Choose Entry endpoint based on pair number (same logic as Dialer for WiFi compatibility) ---
-            if pair_num <= 4:
+            if pair_num <= 6:
                 logger.debug(
                     f"Using IPv4 endpoint for Entry proxy {pair_num} (WiFi compatibility)"
                 )
                 server_entry, port_entry = generate_ipv4_endpoint()
             else:
-                # For pairs > 4, we can revert to the original logic if needed,
                 # or simply use IPv6 like the dialer. Here we mirror the dialer logic.
                 logger.debug(f"Using IPv6 endpoint for Entry proxy {pair_num}")
                 server_entry, port_entry = generate_ipv6_endpoint()
-            
+
             # Note: The previous logic using ipv6_endpoint_count and NUM_IPV6_ENTRY_ENDPOINTS
-            # for entry proxy endpoint selection has been replaced by the logic above.
-            
             entry_proxy = {
                 "name": entry_proxy_name,
                 "type": "wireguard",
                 "ip": ip_entry,
                 "ipv6": ipv6_entry,
+                "ip-version": "dual",
                 "private-key": priv_key_entry,
                 "server": server_entry,
                 "port": port_entry,
@@ -463,7 +493,7 @@ def main():
                 "reserved": reserved_entry,
                 "udp": True,
                 "mtu": 1280,
-                "amnezia-wg-option": {"jc": "5", "jmin": "50", "jmax": "100"},
+                "amnezia-wg-option": {"jc": "5", "jmin": "200", "jmax": "201"},
             }
             proxies_list.append(entry_proxy)
 
@@ -480,24 +510,28 @@ def main():
                     ENTRY_URL_TEST_GROUP_NAME,
                     DIALER_URL_TEST_GROUP_NAME,
                     "DIRECT",
-                    *dialer_proxy_names,  # Dialer proxies first in list
-                    *entry_proxy_names,  # Entry proxies second
+                    *dialer_proxy_names,
+                    *entry_proxy_names,
                 ],
             },
             {
                 "name": ENTRY_URL_TEST_GROUP_NAME,
                 "type": "url-test",
                 "url": "https://www.gstatic.com/generate_204",
-                "interval": 30,
+                "interval": 180,
                 "tolerance": 50,
+                "timeout": 5000,
+                "max-failed-times": 3,
                 "proxies": entry_proxy_names,
             },
             {
                 "name": DIALER_URL_TEST_GROUP_NAME,
                 "type": "url-test",
                 "url": "https://www.gstatic.com/generate_204",
-                "interval": 30,
+                "interval": 180,
                 "tolerance": 50,
+                "timeout": 5000,
+                "max-failed-times": 3,
                 "proxies": dialer_proxy_names,
             },
         ]
@@ -521,15 +555,17 @@ def main():
                 updated_rules.append(f"MATCH,{MAIN_SELECTOR_GROUP_NAME}")
             config_template_dict["rules"] = updated_rules
 
-        # Ensure the primary DNS nameserver uses the correct selector group name tag
-        if "dns" in config_template_dict and "nameserver" in config_template_dict["dns"]:
+        if (
+            "dns" in config_template_dict
+            and "nameserver" in config_template_dict["dns"]
+        ):
             if config_template_dict["dns"]["nameserver"]:
                 parts = config_template_dict["dns"]["nameserver"][0].split("#")
-                if len(parts) >= 1:  # Check if there is at least a server part
+                if len(parts) >= 1:
                     # Rebuild tag using the main selector group name
-                    config_template_dict["dns"]["nameserver"][
-                        0
-                    ] = f"{parts[0]}#{MAIN_SELECTOR_GROUP_NAME}"
+                    config_template_dict["dns"]["nameserver"][0] = (
+                        f"{parts[0]}#{MAIN_SELECTOR_GROUP_NAME}"
+                    )
                     logger.info(
                         f"Updated primary DNS nameserver to use '{MAIN_SELECTOR_GROUP_NAME}' group tag."
                     )
@@ -547,7 +583,7 @@ def main():
             # Add comments to the beginning of the file
             generation_time = datetime.datetime.now().isoformat()
             header_comment = "# Generated configs for clash-meta with WireGuard proxies that have amnesia values.\n"
-            header_comment += f"# Generated on: {generation_time}\n\n"
+            header_comment += f"# Time is: {generation_time}\n\n"
 
             with open(OUTPUT_YAML_FILENAME, "w", encoding="utf-8") as f:
                 f.write(header_comment)
@@ -571,7 +607,9 @@ def main():
             sys.exit(1)
 
     except Exception as e:
-        logger.error(f"Unexpected error occurred in script execution: {e}", exc_info=True)
+        logger.error(
+            f"Unexpected error occurred in script execution: {e}", exc_info=True
+        )
         sys.exit(1)
 
 

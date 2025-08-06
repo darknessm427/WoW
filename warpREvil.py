@@ -1,11 +1,14 @@
 import json
-
-true = True
-import platform, subprocess, os, datetime, base64, json
+import platform
+import subprocess
+import os
+import datetime
+import base64
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
 import requests
 
+true = True
 
 temphi = {
     "outbounds": [
@@ -13,12 +16,12 @@ temphi = {
             "type": "wireguard",
             "server": "",
             "server_port": 0,
-            "local_address": ["172.16.0.2/32", ""],
+            "local_address": ["172.16.0.2/32", "2606:4700:110:803c:b477:bf:3a4e:8baf/128"],
             "private_key": "",
             "peer_public_key": "",
             "reserved": [],
             "mtu": 1300,
-            "workers": 2,
+            "workers": 4,
             "detour": "",
             "tag": "",
             "fake_packets": "1-3",
@@ -34,12 +37,12 @@ temp2hi = {
             "type": "wireguard",
             "server": "",
             "server_port": 0,
-            "local_address": ["172.16.0.2/32", ""],
+            "local_address": ["172.16.0.3/32", "2606:4700:110:88ba:4d33:bf85:2dd0:aa53/128"],
             "private_key": "",
             "peer_public_key": "",
             "reserved": [],
             "mtu": 1300,
-            "workers": 2,
+            "workers": 4,
             "detour": "",
             "tag": "",
             "fake_packets_mode": "m4",
@@ -54,7 +57,7 @@ temp = {
             "tag": "",
             "name": "",
             "mtu": 1280,
-            "address": ["172.16.0.2/32", ""],
+            "address": ["172.16.0.2/32", "2606:4700:110:803c:b477:bf:3a4e:8baf/128"],
             "private_key": "",
             "peers": [
                 {
@@ -67,58 +70,52 @@ temp = {
                 }
             ],
             "detour": "",
-            "workers": 2,
+            "workers": 4,
         }
     ]
 }
+
 WoW_v2 = [
     {
         "remarks": "𓄂𓆃 🗽 ÐΛɌ₭ᑎΞ𐒡𐒡 - WoW",
         "log": {"loglevel": "warning"},
         "dns": {
             "hosts": {
-                "geosite:category-ads-all": "127.0.0.1",
-                "geosite:category-ads-ir": "127.0.0.1",
+                "geosite:category-ads-all": ["127.0.0.1"],
+                "geosite:category-ads-ir": ["127.0.0.1"],
             },
             "servers": [
-                "https://94.140.14.14/dns-query",
+                {"address": "1.1.1.1", "tag": "remote-dns"},
                 {
                     "address": "8.8.8.8",
-                    "domains": ["geosite:category-ir", "domain:.ir"],
+                    "domains": ["geosite:category-ir"],
                     "expectIPs": ["geoip:ir"],
-                    "port": 53,
+                    "skipFallback": True,
                 },
             ],
+            "queryStrategy": "UseIP",
             "tag": "dns",
         },
         "inbounds": [
             {
                 "port": 10808,
                 "protocol": "socks",
-                "settings": {"auth": "noauth", "udp": true, "userLevel": 8},
+                "settings": {"auth": "noauth", "udp": True, "userLevel": 8},
                 "sniffing": {
                     "destOverride": ["http", "tls"],
-                    "enabled": true,
-                    "routeOnly": true,
+                    "enabled": True,
+                    "routeOnly": True,
                 },
                 "tag": "socks-in",
             },
             {
-                "port": 10809,
-                "protocol": "http",
-                "settings": {"auth": "noauth", "udp": true, "userLevel": 8},
-                "sniffing": {
-                    "destOverride": ["http", "tls"],
-                    "enabled": true,
-                    "routeOnly": true,
-                },
-                "tag": "http-in",
-            },
-            {
-                "listen": "127.0.0.1",
                 "port": 10853,
                 "protocol": "dokodemo-door",
-                "settings": {"address": "1.1.1.1", "network": "tcp,udp", "port": 53},
+                "settings": {
+                    "address": "1.1.1.1",
+                    "network": "tcp,udp",
+                    "port": 53,
+                },
                 "tag": "dns-in",
             },
         ],
@@ -126,38 +123,54 @@ WoW_v2 = [
             {
                 "protocol": "wireguard",
                 "settings": {
-                    "address": ["172.16.0.2/32", ""],
+                    "address": [
+                        "172.16.0.2/32",
+                        "2606:4700:110:8dbb:8767:9b6:31a:1a20/128",
+                    ],
                     "mtu": 1280,
-                    "peers": [{"endpoint": "", "publicKey": ""}],
-                    "reserved": 0,
+                    "peers": [
+                        {
+                            "endpoint": "",
+                            "publicKey": "",
+                            "keepAlive": 25,
+                        }
+                    ],
+                    "reserved": [],
                     "secretKey": "",
-                    "keepAlive": 10,
-                    "wnoise": "quic",
-                    "wnoisecount": "10-15",
-                    "wpayloadsize": "1-8",
-                    "wnoisedelay": "1-3",
                 },
-                "streamSettings": {"sockopt": {"dialerProxy": "warp-ir"}},
-                "tag": "warp-out",
+                "tag": "chain",
+                "streamSettings": {"sockopt": {"dialerProxy": "proxy"}},
             },
             {
                 "protocol": "wireguard",
                 "settings": {
-                    "address": ["172.16.0.2/32", ""],
+                    "address": [
+                        "172.16.0.2/32",
+                        "2606:4700:110:84f9:a775:7b2a:7f6a:b43f/128",
+                    ],
                     "mtu": 1280,
-                    "peers": [{"endpoint": "162.159.192.115:864", "publicKey": ""}],
-                    "reserved": 0,
+                    "peers": [
+                        {
+                            "endpoint": "",
+                            "publicKey": "",
+                            "keepAlive": 25,
+                        }
+                    ],
+                    "reserved": [],
                     "secretKey": "",
-                    "keepAlive": 10,
                     "wnoise": "quic",
                     "wnoisecount": "10-15",
-                    "wpayloadsize": "1-8",
-                    "wnoisedelay": "1-3",
+                    "wpayloadsize": "5-10",
+                    "wnoisedelay": "1",
                 },
-                "tag": "warp-ir",
+                "tag": "proxy",
             },
             {"protocol": "dns", "tag": "dns-out"},
-            {"protocol": "freedom", "settings": {}, "tag": "direct"},
+            {
+                "protocol": "freedom",
+                "settings": {"domainStrategy": "UseIP"},
+                "tag": "direct",
+            },
             {
                 "protocol": "blackhole",
                 "settings": {"response": {"type": "http"}},
@@ -173,37 +186,40 @@ WoW_v2 = [
                     "uplinkOnly": 1,
                 }
             },
-            "system": {"statsOutboundUplink": true, "statsOutboundDownlink": true},
+            "system": {"statsOutboundUplink": True, "statsOutboundDownlink": True},
         },
         "routing": {
             "domainStrategy": "IPIfNonMatch",
             "rules": [
                 {"inboundTag": ["dns-in"], "outboundTag": "dns-out", "type": "field"},
                 {
-                    "ip": ["8.8.8.8"],
-                    "outboundTag": "direct",
-                    "port": "53",
+                    "inboundTag": ["socks-in"],
+                    "port": 53,
+                    "outboundTag": "dns-out",
                     "type": "field",
                 },
                 {
-                    "domain": ["geosite:category-ir", "domain:.ir"],
-                    "outboundTag": "direct",
+                    "inboundTag": ["remote-dns"],
+                    "outboundTag": "chain",
                     "type": "field",
                 },
+                {"inboundTag": ["dns"], "outboundTag": "direct", "type": "field"},
                 {
-                    "ip": ["geoip:ir", "geoip:private"],
-                    "outboundTag": "direct",
-                    "type": "field",
-                },
-                {
-                    "domain": [
-                        "geosite:category-ads-all",
-                        "geosite:category-ads-ir",
-                    ],
+                    "domain": ["geosite:category-ads-all", "geosite:category-ads-ir"],
                     "outboundTag": "block",
                     "type": "field",
                 },
-                {"outboundTag": "warp-out", "type": "field", "network": "tcp,udp"},
+                {
+                    "domain": ["geosite:category-ir"],
+                    "outboundTag": "direct",
+                    "type": "field",
+                },
+                {"ip": ["geoip:ir"], "outboundTag": "direct", "type": "field"},
+                {
+                    "network": "tcp,udp",
+                    "outboundTag": "chain",
+                    "type": "field",
+                },
             ],
         },
         "stats": {},
@@ -213,48 +229,41 @@ WoW_v2 = [
         "log": {"loglevel": "warning"},
         "dns": {
             "hosts": {
-                "geosite:category-ads-all": "127.0.0.1",
-                "geosite:category-ads-ir": "127.0.0.1",
+                "geosite:category-ads-all": ["127.0.0.1"],
+                "geosite:category-ads-ir": ["127.0.0.1"],
             },
             "servers": [
-                "https://94.140.14.14/dns-query",
+                {"address": "1.1.1.1", "tag": "remote-dns"},
                 {
                     "address": "8.8.8.8",
-                    "domains": ["geosite:category-ir", "domain:.ir"],
+                    "domains": ["geosite:category-ir"],
                     "expectIPs": ["geoip:ir"],
-                    "port": 53,
+                    "skipFallback": True,
                 },
             ],
+            "queryStrategy": "UseIP",
             "tag": "dns",
         },
         "inbounds": [
             {
                 "port": 10808,
                 "protocol": "socks",
-                "settings": {"auth": "noauth", "udp": true, "userLevel": 8},
+                "settings": {"auth": "noauth", "udp": True, "userLevel": 8},
                 "sniffing": {
                     "destOverride": ["http", "tls"],
-                    "enabled": true,
-                    "routeOnly": true,
+                    "enabled": True,
+                    "routeOnly": True,
                 },
                 "tag": "socks-in",
             },
             {
-                "port": 10809,
-                "protocol": "http",
-                "settings": {"auth": "noauth", "udp": true, "userLevel": 8},
-                "sniffing": {
-                    "destOverride": ["http", "tls"],
-                    "enabled": true,
-                    "routeOnly": true,
-                },
-                "tag": "http-in",
-            },
-            {
-                "listen": "127.0.0.1",
                 "port": 10853,
                 "protocol": "dokodemo-door",
-                "settings": {"address": "1.1.1.1", "network": "tcp,udp", "port": 53},
+                "settings": {
+                    "address": "1.1.1.1",
+                    "network": "tcp,udp",
+                    "port": 53,
+                },
                 "tag": "dns-in",
             },
         ],
@@ -262,21 +271,33 @@ WoW_v2 = [
             {
                 "protocol": "wireguard",
                 "settings": {
-                    "address": ["172.16.0.2/32", ""],
+                    "address": [
+                        "172.16.0.2/32",
+                        "2606:4700:110:84f9:a775:7b2a:7f6a:b43f/128",
+                    ],
                     "mtu": 1280,
-                    "peers": [{"endpoint": ":}", "publicKey": ""}],
-                    "reserved": 0,
+                    "peers": [
+                        {
+                            "endpoint": "",
+                            "publicKey": "",
+                            "keepAlive": 25,
+                        }
+                    ],
+                    "reserved": [],
                     "secretKey": "",
-                    "keepAlive": 10,
                     "wnoise": "quic",
                     "wnoisecount": "10-15",
-                    "wpayloadsize": "1-8",
-                    "wnoisedelay": "1-3",
+                    "wpayloadsize": "5-10",
+                    "wnoisedelay": "1",
                 },
-                "tag": "warp",
+                "tag": "proxy",
             },
             {"protocol": "dns", "tag": "dns-out"},
-            {"protocol": "freedom", "settings": {}, "tag": "direct"},
+            {
+                "protocol": "freedom",
+                "settings": {"domainStrategy": "UseIP"},
+                "tag": "direct",
+            },
             {
                 "protocol": "blackhole",
                 "settings": {"response": {"type": "http"}},
@@ -292,30 +313,36 @@ WoW_v2 = [
                     "uplinkOnly": 1,
                 }
             },
-            "system": {"statsOutboundUplink": true, "statsOutboundDownlink": true},
+            "system": {"statsOutboundUplink": True, "statsOutboundDownlink": True},
         },
         "routing": {
             "domainStrategy": "IPIfNonMatch",
             "rules": [
                 {"inboundTag": ["dns-in"], "outboundTag": "dns-out", "type": "field"},
                 {
-                    "ip": ["8.8.8.8"],
-                    "outboundTag": "direct",
-                    "port": "53",
+                    "inboundTag": ["socks-in"],
+                    "port": 53,
+                    "outboundTag": "dns-out",
                     "type": "field",
                 },
                 {
-                    "domain": ["geosite:category-ir", "domain:.ir"],
-                    "outboundTag": "direct",
+                    "inboundTag": ["remote-dns"],
+                    "outboundTag": "proxy",
                     "type": "field",
                 },
-                {"ip": ["geoip:ir"], "outboundTag": "direct", "type": "field"},
+                {"inboundTag": ["dns"], "outboundTag": "direct", "type": "field"},
                 {
                     "domain": ["geosite:category-ads-all", "geosite:category-ads-ir"],
                     "outboundTag": "block",
                     "type": "field",
                 },
-                {"outboundTag": "warp", "type": "field", "network": "tcp,udp"},
+                {
+                    "domain": ["geosite:category-ir"],
+                    "outboundTag": "direct",
+                    "type": "field",
+                },
+                {"ip": ["geoip:ir"], "outboundTag": "direct", "type": "field"},
+                {"network": "tcp,udp", "outboundTag": "proxy", "type": "field"},
             ],
         },
         "stats": {},
@@ -328,13 +355,8 @@ def byte_to_base64(myb):
 
 
 def generate_public_key(key_bytes):
-    # Convert the private key bytes to an X25519PrivateKey object
     private_key = X25519PrivateKey.from_private_bytes(key_bytes)
-
-    # Perform the scalar multiplication to get the public key
     public_key = private_key.public_key()
-
-    # Serialize the public key to bytes
     public_key_bytes = public_key.public_bytes(
         encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
     )
@@ -343,20 +365,15 @@ def generate_public_key(key_bytes):
 
 def generate_private_key():
     key = os.urandom(32)
-    # Modify random bytes using algorithm described at:
-    # https://cr.yp.to/ecdh.html.
-    key = list(key)  # Convert bytes to list for mutable operations
+    key = list(key)
     key[0] &= 248
     key[31] &= 127
     key[31] |= 64
-    return bytes(key)  # Convert list back to bytes
+    return bytes(key)
 
 
 def register_key_on_CF(pub_key):
     url = "https://api.cloudflareclient.com/v0a4005/reg"
-    # url = 'https://api.cloudflareclient.com/v0a2158/reg'
-    # url = 'https://api.cloudflareclient.com/v0a3596/reg'
-
     body = {
         "key": pub_key,
         "install_id": "",
@@ -367,9 +384,7 @@ def register_key_on_CF(pub_key):
         "model": "PC",
         "locale": "en_US",
     }
-
     bodyString = json.dumps(body)
-
     headers = {
         "Content-Type": "application/json; charset=UTF-8",
         "Host": "api.cloudflareclient.com",
@@ -378,7 +393,6 @@ def register_key_on_CF(pub_key):
         "User-Agent": "okhttp/3.12.1",
         "CF-Client-Version": "a-6.30-3596",
     }
-
     r = requests.post(url, data=bodyString, headers=headers)
     return r
 
@@ -386,27 +400,22 @@ def register_key_on_CF(pub_key):
 def bind_keys():
     priv_bytes = generate_private_key()
     priv_string = byte_to_base64(priv_bytes)
-
     pub_bytes = generate_public_key(priv_bytes)
     pub_string = byte_to_base64(pub_bytes)
-
     result = register_key_on_CF(pub_string)
-
     if result.status_code == 200:
         try:
             z = json.loads(result.content)
             client_id = z["config"]["client_id"]
             cid_byte = base64.b64decode(client_id)
             reserved = [int(j) for j in cid_byte]
-
             return (
                 "2606:4700:110:846c:e510:bfa1:ea9f:5247/128",
                 priv_string,
                 reserved,
                 "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
             )
-
-        except Exception as e:
+        except Exception:
             print("Something went wronge with api")
             exit()
 
@@ -429,7 +438,6 @@ def arch_suffix():
 
 def export_bestIPS(path):
     Bestip = []
-
     with open(path, "r") as csv_file:
         next(csv_file)
         c = 0
@@ -438,17 +446,14 @@ def export_bestIPS(path):
             c += 1
             if c == 2:
                 break
-
     with open("Bestip.txt", "w") as f:
         for ip in Bestip:
             f.write(f"{ip}\n")
-
     return Bestip
 
 
 def export_bestIPS2(path):
     Bestip = []
-
     with open(path, "r") as csv_file:
         csv_file2 = csv_file.readlines()
         c = 0
@@ -457,7 +462,6 @@ def export_bestIPS2(path):
             c += 1
             if c == 2:
                 break
-
     return Bestip
 
 
@@ -467,7 +471,6 @@ def export_Hiddify(t_ips, f_ips):
         "%Y-%m-%d %H:%M:%S"
     )
     config_prefix = f"warp://{t_ips[0]}?ifp=1-3&ifpm=m4#Warp-IR&&detour=warp://{t_ips[1]}?ifp=1-2&ifpm=m5#WoW-DE"
-
     title = (
         "//profile-title: base64:"
         + base64.b64encode("𓄂𓆃 🗽 ÐΛɌ₭ᑎΞ𐒡𐒡 ".encode("utf-8")).decode("utf-8")
@@ -477,7 +480,6 @@ def export_Hiddify(t_ips, f_ips):
     sub_info = "//subscription-userinfo: upload=0; download=0; total=10737418240000000; expire=2546249531\n"
     profile_web = "//profile-web-page-url: https://github.com/darknessm427\n"
     last_modified = "//last update on: " + formatted_time + "\n"
-
     with open("warp.json", "w") as op:
         op.write(
             title
@@ -491,7 +493,6 @@ def export_Hiddify(t_ips, f_ips):
 
 def toSingBox1(tag, clean_ip, detour, temp):
     print("Generating Warp Conf")
-
     data = bind_keys()
     wg = temp["outbounds"][0]
     wg["private_key"] = data[1]
@@ -501,7 +502,7 @@ def toSingBox1(tag, clean_ip, detour, temp):
     wg["peers"][0]["address"] = clean_ip.split(":")[0]
     wg["peers"][0]["port"] = int(clean_ip.split(":")[1])
     wg["mtu"] = 1280
-    wg["workers"] = 2
+    wg["workers"] = 4
     wg["detour"] = detour
     wg["tag"] = tag
     return wg
@@ -509,7 +510,6 @@ def toSingBox1(tag, clean_ip, detour, temp):
 
 def toSingBox2(tag, clean_ip, detour, temp):
     print("Generating Warp Conf")
-
     data = bind_keys()
     wg = temp["outbounds"][0]
     wg["private_key"] = data[1]
@@ -518,8 +518,8 @@ def toSingBox2(tag, clean_ip, detour, temp):
     wg["local_address"][1] = data[0]
     wg["server"] = clean_ip.split(":")[0]
     wg["server_port"] = int(clean_ip.split(":")[1])
-    wg["mtu"] = 1300
-    wg["workers"] = 2
+    wg["mtu"] = 1280
+    wg["workers"] = 4
     wg["detour"] = detour
     wg["tag"] = tag
     return wg
@@ -528,65 +528,50 @@ def toSingBox2(tag, clean_ip, detour, temp):
 def toxray1(clean_ip):
     global WoW_v2
     print("Generating Warp Conf")
-
     data = bind_keys()
-    print(data)
     WoW_v2[0]["outbounds"][0]["settings"]["secretKey"] = data[1]
     WoW_v2[0]["outbounds"][0]["settings"]["peers"][0]["publicKey"] = data[3]
     WoW_v2[0]["outbounds"][0]["settings"]["reserved"] = data[2]
-    WoW_v2[0]["outbounds"][0]["settings"]["address"][1] = data[0]
     WoW_v2[0]["outbounds"][0]["settings"]["peers"][0]["endpoint"] = (
         clean_ip.split(":")[0] + ":" + clean_ip.split(":")[1]
     )
-    WoW_v2[0]["outbounds"][0]["settings"]["mtu"] = 1300
-
     WoW_v2[1]["outbounds"][0]["settings"]["secretKey"] = data[1]
     WoW_v2[1]["outbounds"][0]["settings"]["peers"][0]["publicKey"] = data[3]
     WoW_v2[1]["outbounds"][0]["settings"]["reserved"] = data[2]
-    WoW_v2[1]["outbounds"][0]["settings"]["address"][1] = data[0]
     WoW_v2[1]["outbounds"][0]["settings"]["peers"][0]["endpoint"] = (
         clean_ip.split(":")[0] + ":" + clean_ip.split(":")[1]
     )
-    WoW_v2[1]["outbounds"][0]["settings"]["mtu"] = 1300
     WoW_v2 = WoW_v2
 
 
 def toxray11(clean_ip):
     global WoW_v2
     print("Generating Warp Conf")
-
     data = bind_keys()
-    WoW_v2 = WoW_v2
     WoW_v2[0]["outbounds"][1]["settings"]["secretKey"] = data[1]
     WoW_v2[0]["outbounds"][1]["settings"]["peers"][0]["publicKey"] = data[3]
     WoW_v2[0]["outbounds"][1]["settings"]["reserved"] = data[2]
-    WoW_v2[0]["outbounds"][1]["settings"]["address"][1] = data[0]
     WoW_v2[0]["outbounds"][1]["settings"]["peers"][0]["endpoint"] = (
         clean_ip.split(":")[0] + ":" + clean_ip.split(":")[1]
     )
-    WoW_v2[0]["outbounds"][1]["settings"]["mtu"] = 1300
     WoW_v2 = WoW_v2
 
 
 def export_SingBox(t_ips, arch):
     with open("assets/singbox-template.json", "r") as f:
         data = json.load(f)
-
     data["outbounds"][0]["outbounds"].extend(["WARP-MAIN", "WARP-WOW"])
     data["outbounds"][1]["outbounds"].extend(["WARP-MAIN", "WARP-WOW"])
-
     main_wg = toSingBox1("WARP-MAIN", t_ips[0], "direct", temp)
     if main_wg:
         data["endpoints"].append(main_wg)
     else:
-        print(f"Failed to generate WARP-MAIN configuration")
-
+        print("Failed to generate WARP-MAIN configuration")
     wow_wg = toSingBox1("WARP-WOW", t_ips[1], "WARP-MAIN", temp)
     if wow_wg:
         data["endpoints"].append(wow_wg)
     else:
-        print(f"Failed to generate WARP-MAIN configuration")
-
+        print("Failed to generate WARP-MAIN configuration")
     with open("sing-box.json", "w") as f:
         f.write(json.dumps(data, indent=2))
 
@@ -594,12 +579,10 @@ def export_SingBox(t_ips, arch):
 def export_Xray(t_ips, arch):
     global WoW_v2
     toxray1(t_ips[0])
-
     toxray11(t_ips[1])
-
     data = WoW_v2
-    with open("Xray-WoW.json", "w") as f:
-        f.write(json.dumps(data, indent=2))
+    with open("Xray-WoW.json", "w", encoding='utf-8') as f:
+        f.write(json.dumps(data, indent=2, ensure_ascii=False))
 
 
 def export_SingBox2(t_ips, arch):
@@ -627,22 +610,18 @@ def main(script_dir):
         print("Error: Warp execution failed.")
     else:
         print("Warp executed successfully.")
-
     result_path = os.path.join(script_dir, "result.csv")
     top_ips = export_bestIPS(result_path)
-    
     export_Hiddify(t_ips=top_ips, f_ips=result_path)
     export_SingBox(t_ips=top_ips, arch=arch)
     export_SingBox2(t_ips=top_ips, arch=arch)
     export_Xray(t_ips=top_ips, arch=arch)
-
     os.remove("result.csv")
     os.remove("warp")
 
 
 if __name__ == "__main__":
-    script_directory = os.path.dirname(__file__)
+    script_directory = os.path.dirname(os.path.abspath(__file__))
     main(script_directory)
-
 
 print(str(WoW_v2))
